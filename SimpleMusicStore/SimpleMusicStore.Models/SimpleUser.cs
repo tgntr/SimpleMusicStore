@@ -7,7 +7,14 @@ namespace SimpleMusicStore.Models
 {
     public class SimpleUser : IdentityUser
     {
-        public int? AddressId { get; set; }
-        public Address Address { get; set; }
+        public List<Address> Addresses { get; set; } = new List<Address>();
+
+        public List<ArtistUser> FollowedArtists { get; set; } = new List<ArtistUser>();
+
+        public List<LabelUser> FollowedLabels { get; set; } = new List<LabelUser>();
+
+        public List<RecordUser> Wantlist { get; set; } = new List<RecordUser>();
+
+        public List<Comment> Comments { get; set; } = new List<Comment>();
     }
 }

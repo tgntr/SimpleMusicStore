@@ -4,15 +4,10 @@ using System.Text;
 
 namespace SimpleMusicStore.Models
 {
-    public class Address
+    public class RecordUser
     {
-        public int Id { get; set; }
-
-        public string Country { get; set; }
-
-        public string City { get; set; }
-
-        public string Street { get; set; }
+        public int RecordId { get; set; }
+        public Record Record { get; set; }
 
         public string UserId { get; set; }
         public SimpleUser User { get; set; }

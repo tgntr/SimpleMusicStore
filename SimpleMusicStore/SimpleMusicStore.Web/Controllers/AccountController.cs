@@ -37,16 +37,19 @@ namespace SimpleMusicStore.Web.Controllers
         {
             if (ModelState.IsValid)
             {
-                var address = new Address { Country = model.Country, City = model.City, Street = model.Street };
-                var user = new SimpleUser { UserName = model.Email, Email = model.Email, Address = address };
-
+                var user = new SimpleUser { UserName = model.Email, Email = model.Email };
+                
                 var result = await _userManager.CreateAsync(user, model.Password);
 
 
 
                 if (result.Succeeded)
                 {
-                    await createRolesandUsers(user);
+                    var address = new Address { Country = model.Country, City = model.City, Street = model.Street, User = user };
+                    _context.Addresses.Add(address);
+                    _context.SaveChanges();
+
+                    await FirstRegisteredUserIsAdmin(user);
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
                     var callbackUrl = Url.Page(
@@ -106,7 +109,7 @@ namespace SimpleMusicStore.Web.Controllers
             return RedirectToAction("Login");
         }
 
-        private async Task createRolesandUsers(SimpleUser user)
+        private async Task FirstRegisteredUserIsAdmin(SimpleUser user)
         {
             bool x = await _roleManager.RoleExistsAsync("Admin");
             if (!x)

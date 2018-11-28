@@ -11,6 +11,9 @@ namespace SimpleMusicStore.Web.Areas.Admin.Services
 {
     public class RecordService
     {
+        private const string release = "releases";
+        private const string label = "labels";
+        private const string artist = "artists";
         private SimpleDbContext _context;
 
         public RecordService(SimpleDbContext context)
@@ -20,21 +23,39 @@ namespace SimpleMusicStore.Web.Areas.Admin.Services
 
         public void ImportFromDiscogs(string discogsUrl)
         {
-            var recordDto = GetRecord(discogsUrl);
+            var recordDto = Get<RecordDto>(discogsUrl);
+            
+
         }
 
-        private RecordDto GetRecord(string discogsUrl)
+        private T Get<T>(string discogsUrl)
         {
-            var releaseId = discogsUrl.Split("/").Last();
+            var parameters = discogsUrl.ToLower().Split("/");
+            var releaseId = parameters.Last().Where(char.IsNumber).ToString();
+
+            var typeOfContent = "";
+            if (parameters.Any(p=>p=="artist"))
+            {
+                typeOfContent = artist;
+            }
+            else if (parameters.Any(p => p == "label"))
+            {
+                typeOfContent = label;
+            }
+            else if (true)
+            {
+                typeOfContent = release;
+            }
 
             WebClient webClient = new WebClient();
             webClient.Headers.Add("user-agent", "SimpleMusicStore");
 
             
-            var url = $"https://api.discogs.com/releases/{releaseId}?key=VpQTKELQqmtSDIXYycSF&secret=cOgmwRrXvdWmubVEeKYYIuZyjyHBaQfr";
-            string content = webClient.DownloadString($"https://api.discogs.com/releases/{releaseId}?key=VpQTKELQqmtSDIXYycSF&secret=cOgmwRrXvdWmubVEeKYYIuZyjyHBaQfr");
-
-            return JsonConvert.DeserializeObject<RecordDto>(content);
+            string content = webClient.DownloadString($"https://api.discogs.com/{typeOfContent}/{releaseId}?key=VpQTKELQqmtSDIXYycSF&secret=cOgmwRrXvdWmubVEeKYYIuZyjyHBaQfr");
+            
+             
+            return JsonConvert.DeserializeObject<T>(content);
         }
+        
     }
 }

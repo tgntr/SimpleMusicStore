@@ -27,8 +27,7 @@ namespace SimpleMusicStore.Web.Controllers
         }
         public IActionResult Index()
         {
-
-            service.ImportFromDiscogs("https://www.discogs.com/Soul-Capsule-Overcome/master/484910");
+            
             return View();
         }
 

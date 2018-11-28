@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleMusicStore.Data;
 
 namespace SimpleMusicStore.Data.Migrations
 {
     [DbContext(typeof(SimpleDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181128210302_add-entities")]
+    partial class addentities
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -141,11 +143,7 @@ namespace SimpleMusicStore.Data.Migrations
 
                     b.Property<string>("Street");
 
-                    b.Property<string>("UserId");
-
                     b.HasKey("Id");
-
-                    b.HasIndex("UserId");
 
                     b.ToTable("Addresses");
                 });
@@ -308,6 +306,8 @@ namespace SimpleMusicStore.Data.Migrations
 
                     b.Property<int>("AccessFailedCount");
 
+                    b.Property<int?>("AddressId");
+
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken();
 
@@ -340,6 +340,10 @@ namespace SimpleMusicStore.Data.Migrations
                         .HasMaxLength(256);
 
                     b.HasKey("Id");
+
+                    b.HasIndex("AddressId")
+                        .IsUnique()
+                        .HasFilter("[AddressId] IS NOT NULL");
 
                     b.HasIndex("NormalizedEmail")
                         .HasName("EmailIndex");
@@ -418,13 +422,6 @@ namespace SimpleMusicStore.Data.Migrations
                         .OnDelete(DeleteBehavior.Cascade);
                 });
 
-            modelBuilder.Entity("SimpleMusicStore.Models.Address", b =>
-                {
-                    b.HasOne("SimpleMusicStore.Models.SimpleUser", "User")
-                        .WithMany("Addresses")
-                        .HasForeignKey("UserId");
-                });
-
             modelBuilder.Entity("SimpleMusicStore.Models.ArtistUser", b =>
                 {
                     b.HasOne("SimpleMusicStore.Models.Artist", "Artist")
@@ -498,6 +495,13 @@ namespace SimpleMusicStore.Data.Migrations
                         .WithMany("Wantlist")
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade);
+                });
+
+            modelBuilder.Entity("SimpleMusicStore.Models.SimpleUser", b =>
+                {
+                    b.HasOne("SimpleMusicStore.Models.Address", "Address")
+                        .WithOne("User")
+                        .HasForeignKey("SimpleMusicStore.Models.SimpleUser", "AddressId");
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.Track", b =>

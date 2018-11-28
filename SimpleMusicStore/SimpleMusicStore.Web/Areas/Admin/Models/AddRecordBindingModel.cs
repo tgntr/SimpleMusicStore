@@ -9,7 +9,7 @@ namespace SimpleMusicStore.Web.Areas.Admin.Models
     public class AddRecordBindingModel
     {
         [Required]
-        [UrlAttribute]
+        [Url]
         [Display(Name = "Discogs url link")]
         public string DiscogsUrl { get; set; }
     }

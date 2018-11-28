@@ -25,7 +25,7 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         {
             _recordService = new RecordService(context);
         }
-
+        [HttpGet("/admin/record/add")]
         public IActionResult Add()
         {
             _recordService.ImportFromDiscogs("https://www.discogs.com/Soul-Capsule-Overcome/master/484910");

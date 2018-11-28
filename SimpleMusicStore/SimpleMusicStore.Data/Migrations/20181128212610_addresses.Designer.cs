@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleMusicStore.Data;
 
 namespace SimpleMusicStore.Data.Migrations
 {
     [DbContext(typeof(SimpleDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181128212610_addresses")]
+    partial class addresses
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -421,7 +423,7 @@ namespace SimpleMusicStore.Data.Migrations
             modelBuilder.Entity("SimpleMusicStore.Models.Address", b =>
                 {
                     b.HasOne("SimpleMusicStore.Models.SimpleUser", "User")
-                        .WithMany("Addresses")
+                        .WithMany()
                         .HasForeignKey("UserId");
                 });
 

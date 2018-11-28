@@ -13,7 +13,9 @@ namespace SimpleMusicStore.Web.Areas.Admin.Models.RecordDtos
 
         public RecordArtistDto[] Artists { get; set; }
 
-        public RecordImageDto[] Images { get; set; }
+        public ImageDto[] Images { get; set; }
+
+        public int Id { get; set; }
 
         public string[] Genres { get; set; }
 

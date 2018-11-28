@@ -16,5 +16,8 @@ namespace SimpleMusicStore.Models
         public List<RecordUser> Wantlist { get; set; } = new List<RecordUser>();
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
+
+        public List<Order> Orders { get; set; } = new List<Order>();
+        
     }
 }

@@ -5,17 +5,19 @@ using System.Text;
 
 namespace SimpleMusicStore.Models
 {
-    public class Comment
+    public class Video
     {
         public int Id { get; set; }
 
         [Required]
-        public string UserId { get; set; }
-        public SimpleUser User { get; set; }
+        public string Title { get; set; }
 
         [Required]
-        public string Content { get; set; }
+        [Url]
+        public string Url { get; set; }
 
-        public DateTime DatePosted { get; set; } = DateTime.UtcNow;
+        [Required]
+        public int RecordId { get; set; }
+        public Record Record { get; set; }
     }
 }

@@ -23,10 +23,10 @@ namespace SimpleMusicStore.Models
 
         public string Genre { get; set; }
 
+        [Required]
         public DateTime ReleaseDate { get; set; }
-        
-        [NotMapped]
-        public List<String> VideoUrls { get; set; }
+
+        public List<Video> Videos { get; set; } = new List<Video>();
 
         public List<Track> Tracks { get; set; } = new List<Track>();
 
@@ -44,5 +44,7 @@ namespace SimpleMusicStore.Models
         public List<Comment> Comments { get; set; } = new List<Comment>();
 
         public List<RecordUser> WantedBy { get; set; } = new List<RecordUser>();
+
+        public List<RecordOrder> Orders { get; set; } = new List<RecordOrder>();
     }
 }

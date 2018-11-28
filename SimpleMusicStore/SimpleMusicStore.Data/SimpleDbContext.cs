@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
@@ -32,6 +33,12 @@ namespace SimpleMusicStore.Data
 
         public DbSet<RecordUser> RecordUsers { get; set; }
 
+        public DbSet<Video> Videos { get; set; }
+
+        public DbSet<Order> Orders { get; set; }
+
+        public DbSet<RecordOrder> RecordOrders { get; set; }
+
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
             base.OnConfiguring(optionsBuilder);
@@ -40,6 +47,7 @@ namespace SimpleMusicStore.Data
         protected override void OnModelCreating(ModelBuilder builder)
         {
             base.OnModelCreating(builder);
+            
 
             builder.Entity<ArtistUser>()
                 .HasKey(au => new { au.ArtistId, au.UserId });
@@ -47,7 +55,7 @@ namespace SimpleMusicStore.Data
             builder.Entity<ArtistUser>()
                 .HasOne(au => au.Artist)
                 .WithMany(a => a.Followers)
-                .HasForeignKey(au=>au.ArtistId);
+                .HasForeignKey(au => au.ArtistId);
 
             builder.Entity<ArtistUser>()
                 .HasOne(au => au.User)
@@ -79,7 +87,27 @@ namespace SimpleMusicStore.Data
                 .HasOne(ru => ru.User)
                 .WithMany(u => u.Wantlist)
                 .HasForeignKey(ru => ru.UserId);
+
+            builder.Entity<RecordOrder>()
+                .HasKey(ro => new { ro.RecordId, ro.OrderId });
+
+            builder.Entity<RecordOrder>()
+                .HasOne(ro => ro.Record)
+                .WithMany(r => r.Orders)
+                .HasForeignKey(ro => ro.RecordId);
+
+            builder.Entity<RecordOrder>()
+                .HasOne(ro => ro.Order)
+                .WithMany(u => u.Items)
+                .HasForeignKey(ro => ro.OrderId);
+
+            builder.Entity<Order>()
+                .HasOne(o => o.User)
+                .WithMany(u => u.Orders)
+                .HasForeignKey(o => o.UserId)
+                .OnDelete(DeleteBehavior.Restrict);
             
+
         }
 
         

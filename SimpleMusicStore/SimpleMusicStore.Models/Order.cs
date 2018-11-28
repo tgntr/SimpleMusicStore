@@ -5,17 +5,25 @@ using System.Text;
 
 namespace SimpleMusicStore.Models
 {
-    public class Comment
+    public class Order
     {
         public int Id { get; set; }
+
+        [Required]
+        public int DeliveryAddressId { get; set; }
+        public Address DeliveryAddress { get; set; }
 
         [Required]
         public string UserId { get; set; }
         public SimpleUser User { get; set; }
 
-        [Required]
-        public string Content { get; set; }
+        public List<RecordOrder> Items { get; set; }
 
-        public DateTime DatePosted { get; set; } = DateTime.UtcNow;
+        public DateTime OrderDate { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        public decimal TotalPrice { get; set; }
+
+
     }
 }

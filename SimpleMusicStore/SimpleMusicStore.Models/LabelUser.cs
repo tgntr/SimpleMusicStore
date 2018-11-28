@@ -8,9 +8,11 @@ namespace SimpleMusicStore.Models
 {
     public class LabelUser
     {
+        [Required]
         public int LabelId { get; set; }
         public Label Label { get; set; }
         
+        [Required]
         public string UserId { get; set; }
         public SimpleUser User { get; set; }
     }

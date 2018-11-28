@@ -22,17 +22,21 @@ namespace SimpleMusicStore.Web.Areas.Identity.Pages.Account
         private readonly UserManager<SimpleUser> _userManager;
         private readonly ILogger<RegisterModel> _logger;
         private readonly SimpleDbContext _context;
+        private readonly RoleManager<IdentityRole> _roleManager;
 
         public RegisterModel(
             UserManager<SimpleUser> userManager,
             SignInManager<SimpleUser> signInManager,
             ILogger<RegisterModel> logger,
-            SimpleDbContext context)
+            SimpleDbContext context,
+            RoleManager<IdentityRole> roleManager
+            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
             _logger = logger;
             _context = context;
+            _roleManager = roleManager;
         }
 
         [BindProperty]
@@ -75,7 +79,6 @@ namespace SimpleMusicStore.Web.Areas.Identity.Pages.Account
 
         public void OnGet(string returnUrl = null)
         {
-            var asd = _context.Addresses.Include(a => a.User);
             ReturnUrl = returnUrl;
         }
 
@@ -93,6 +96,7 @@ namespace SimpleMusicStore.Web.Areas.Identity.Pages.Account
 
                 if (result.Succeeded)
                 {
+                    await createRolesandUsers(user);
                     _logger.LogInformation("User created a new account with password.");
 
                     var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
@@ -114,6 +118,20 @@ namespace SimpleMusicStore.Web.Areas.Identity.Pages.Account
 
             // If we got this far, something failed, redisplay form
             return Page();
+        }
+
+        private async Task createRolesandUsers(SimpleUser user)
+        {
+            bool x = await _roleManager.RoleExistsAsync("Admin");
+            if (!x)
+            {
+                // first we create Admin rool    
+                var role = new IdentityRole();
+                role.Name = "Admin";
+                await _roleManager.CreateAsync(role);
+
+                var result1 = await _userManager.AddToRoleAsync(user, "Admin");
+            }
         }
     }
 }

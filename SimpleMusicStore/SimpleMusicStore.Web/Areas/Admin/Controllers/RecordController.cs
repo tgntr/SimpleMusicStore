@@ -1,22 +1,21 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Linq;
-using System.Net;
-using System.Net.Http;
 using System.Threading.Tasks;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
+using SimpleMusicStore.Web.Areas.Admin.Models;
 using SimpleMusicStore.Web.Areas.Admin.Services;
-using SimpleMusicStore.Web.Models;
+using SimpleMusicStore.Web.Controllers;
 
-namespace SimpleMusicStore.Web.Controllers
+namespace SimpleMusicStore.Web.Areas.Admin.Controllers
 {
-    public class HomeController : BaseController
+    public class RecordController : BaseController
     {
-        public HomeController(
+        private RecordService _recordService;
+        public RecordController(
            UserManager<SimpleUser> userManager,
            SignInManager<SimpleUser> signInManager,
            SimpleDbContext context,
@@ -24,20 +23,19 @@ namespace SimpleMusicStore.Web.Controllers
            )
             : base(userManager, signInManager, context, roleManager)
         {
+            _recordService = new RecordService(context);
         }
-        public IActionResult Index()
-        {
 
-            service.ImportFromDiscogs("https://www.discogs.com/Soul-Capsule-Overcome/master/484910");
+        public IActionResult Add()
+        {
+            _recordService.ImportFromDiscogs("https://www.discogs.com/Soul-Capsule-Overcome/master/484910");
             return View();
         }
 
-        [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
-        public IActionResult Error()
+        [HttpPost]
+        public IActionResult Add(AddRecordBindingModel model)
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return Redirect("/");
         }
-
-        
     }
 }

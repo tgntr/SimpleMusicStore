@@ -12,12 +12,9 @@ using SimpleMusicStore.Web.Models.BindingModels;
 
 namespace SimpleMusicStore.Web.Controllers
 {
-    public class AccountController : Controller
+    public class AccountController : BaseController
     {
-        private readonly SignInManager<SimpleUser> _signInManager;
-        private readonly UserManager<SimpleUser> _userManager;
-        private readonly SimpleDbContext _context;
-        private readonly RoleManager<IdentityRole> _roleManager;
+        
 
         public AccountController(
            UserManager<SimpleUser> userManager,
@@ -25,11 +22,8 @@ namespace SimpleMusicStore.Web.Controllers
            SimpleDbContext context,
            RoleManager<IdentityRole> roleManager
            )
+            :base(userManager, signInManager, context, roleManager)
         {
-            _userManager = userManager;
-            _signInManager = signInManager;
-            _context = context;
-            _roleManager = roleManager;
         }
         
 

@@ -8,10 +8,12 @@ using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Areas.Admin.Models;
 using SimpleMusicStore.Web.Areas.Admin.Services;
-using SimpleMusicStore.Web.Controllers;
+using SimpleMusicStore.Web.Areas.Admin.Utilities;
+using SimpleMusicStore.Web.Utilities;
 
 namespace SimpleMusicStore.Web.Areas.Admin.Controllers
 {
+    [Area("Admin")]
     public class RecordController : BaseController
     {
         private RecordService _recordService;
@@ -25,17 +27,49 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         {
             _recordService = new RecordService(context);
         }
-        [HttpGet("/admin/record/add")]
+
         public IActionResult Add()
         {
-            _recordService.ImportFromDiscogs("https://www.discogs.com/Soul-Capsule-Overcome/master/484910");
+            
+
             return View();
         }
 
         [HttpPost]
         public IActionResult Add(AddRecordBindingModel model)
         {
+            if (!ModelState.IsValid)
+            {
+                return View();
+            }
+
+            var discogsId = DiscogsUtilities.GetDiscogsId(model.DiscogsUrl);
+            if (!DiscogsUtilities.IsValidDiscogsId(discogsId))
+            {
+                return View();
+            }
+
+            return Redirect($"/admin/record/preview/{discogsId}");
+        }
+
+        public IActionResult Preview(int id)
+        {
+            if (!DiscogsUtilities.IsValidDiscogsId(id))
+            {
+                return RedirectToAction("Add");
+            }
+
+            Record recordDto;
+
+            return View();
+        }
+
+        [HttpPost]
+        public IActionResult Preview(PreviewRecordBindingModel model)
+        {
             return Redirect("/");
         }
+
+        
     }
 }

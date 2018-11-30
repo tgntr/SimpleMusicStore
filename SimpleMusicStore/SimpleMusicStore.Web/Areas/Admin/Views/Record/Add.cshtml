@@ -2,18 +2,16 @@
 @{
     ViewData["Title"] = "Add new record";
 }
-
-<h2>@ViewData["Title"]</h2>
+<br />
 <div class="row">
     <div class="col-md-4">
         <section>
             <form method="post">
-                <h4>Import from discogs url</h4>
+                <h4>Add a new record to the store.</h4>
                 <hr />
-                <div asp-validation-summary="All" class="text-danger"></div>
                 <div class="form-group">
                     <label asp-for="DiscogsUrl"></label>
-                    <input asp-for="DiscogsUrl" class="form-control" />
+                    <input asp-for="DiscogsUrl" class="form-control" placeholder="ex. https://www.discogs.com/release/950220" />
                     <span asp-validation-for="DiscogsUrl" class="text-danger"></span>
                 </div>
                 <div class="form-group">

@@ -7,7 +7,7 @@ using Microsoft.AspNetCore.Mvc;
 using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
 
-namespace SimpleMusicStore.Web.Controllers
+namespace SimpleMusicStore.Web.Utilities
 {
     public abstract class BaseController : Controller
     {

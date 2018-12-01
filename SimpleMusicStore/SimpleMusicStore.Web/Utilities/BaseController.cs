@@ -13,19 +13,16 @@ namespace SimpleMusicStore.Web.Utilities
     {
         protected readonly SignInManager<SimpleUser> _signInManager;
         protected readonly UserManager<SimpleUser> _userManager;
-        protected readonly SimpleDbContext _context;
         protected readonly RoleManager<IdentityRole> _roleManager;
 
         public BaseController(
            UserManager<SimpleUser> userManager,
            SignInManager<SimpleUser> signInManager,
-           SimpleDbContext context,
            RoleManager<IdentityRole> roleManager
            )
         {
             _userManager = userManager;
             _signInManager = signInManager;
-            _context = context;
             _roleManager = roleManager;
         }
     }

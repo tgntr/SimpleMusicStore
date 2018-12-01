@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleMusicStore.Web.Areas.Admin.Utilities;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,9 +9,9 @@ namespace SimpleMusicStore.Web.Areas.Admin.Models
 {
     public class AddRecordBindingModel
     {
+
         [Required]
-        [Url(ErrorMessage = "Must be a valid url")]
-        [RegularExpression(@"https:\/\/www\.discogs\.com\/([^\/]+\/)?((release)|(master))\/[0-9]+([^\/]+)?", ErrorMessage = "Must be a Discogs release url")]
+        [DiscogsUrl(ErrorMessage = "Must be a url link to a Discogs release page")]
         [Display(Name = "Import from Discogs")]
         public string DiscogsUrl { get; set; }
     }

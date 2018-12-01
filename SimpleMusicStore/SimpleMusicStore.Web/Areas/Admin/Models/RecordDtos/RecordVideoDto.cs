@@ -3,5 +3,7 @@
     public class RecordVideoDto
     {
         public string Uri { get; set; }
+
+        public string Title { get; set; }
     }
 }

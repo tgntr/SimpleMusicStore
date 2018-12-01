@@ -24,7 +24,7 @@ namespace SimpleMusicStore.Models
         public string Genre { get; set; }
 
         [Required]
-        public DateTime ReleaseDate { get; set; }
+        public int Year { get; set; }
 
         public List<Video> Videos { get; set; } = new List<Video>();
 

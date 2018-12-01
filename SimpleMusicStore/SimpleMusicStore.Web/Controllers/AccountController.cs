@@ -9,13 +9,14 @@ using Microsoft.Extensions.Logging;
 using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Models.BindingModels;
+using SimpleMusicStore.Web.Services;
 using SimpleMusicStore.Web.Utilities;
 
 namespace SimpleMusicStore.Web.Controllers
 {
     public class AccountController : BaseController
     {
-        
+        private AddressService _addressService;
 
         public AccountController(
            UserManager<SimpleUser> userManager,
@@ -23,8 +24,9 @@ namespace SimpleMusicStore.Web.Controllers
            SimpleDbContext context,
            RoleManager<IdentityRole> roleManager
            )
-            :base(userManager, signInManager, context, roleManager)
+            :base(userManager, signInManager, roleManager)
         {
+            _addressService = new AddressService(context);
         }
         
 
@@ -47,8 +49,7 @@ namespace SimpleMusicStore.Web.Controllers
                 if (result.Succeeded)
                 {
                     var address = new Address { Country = model.Country, City = model.City, Street = model.Street, User = user };
-                    _context.Addresses.Add(address);
-                    _context.SaveChanges();
+                    _addressService.AddAddress(address);
 
                     await FirstRegisteredUserIsAdmin(user);
 

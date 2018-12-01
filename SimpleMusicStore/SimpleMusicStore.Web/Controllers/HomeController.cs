@@ -23,7 +23,7 @@ namespace SimpleMusicStore.Web.Controllers
            SimpleDbContext context,
            RoleManager<IdentityRole> roleManager
            )
-            : base(userManager, signInManager, context, roleManager)
+            : base(userManager, signInManager, roleManager)
         {
         }
         public IActionResult Index()

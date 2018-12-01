@@ -21,9 +21,7 @@ namespace SimpleMusicStore.Web.Areas.Admin.Models.RecordDtos
 
         public string Title { get; set; }
 
-        public RecordFormatDto[] Formats { get; set; }
-
-        public string Released { get; set; }
+        public int Year { get; set; }
 
         public RecordTrackDto[] Tracklist { get; set; }
 

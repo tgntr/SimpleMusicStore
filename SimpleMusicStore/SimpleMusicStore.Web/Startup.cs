@@ -14,6 +14,7 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using SimpleMusicStore.Models;
 using Microsoft.AspNetCore.Identity.UI.Services;
+using AutoMapper;
 
 namespace SimpleMusicStore.Web
 {
@@ -53,8 +54,8 @@ namespace SimpleMusicStore.Web
                 .AddDefaultTokenProviders();
 
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
-        
 
+            services.AddAutoMapper();
     }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.

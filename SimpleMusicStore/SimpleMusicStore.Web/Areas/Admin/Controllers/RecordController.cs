@@ -12,10 +12,12 @@ using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos.RecordDtos;
 using SimpleMusicStore.Web.Services;
 using SimpleMusicStore.Web.Areas.Admin.Utilities;
 using SimpleMusicStore.Web.Models.ViewModels;
+using Microsoft.AspNetCore.Authorization;
 
 namespace SimpleMusicStore.Web.Areas.Admin.Controllers
 {
     [Area("Admin")]
+    [Authorize(Roles = "Admin")]
     public class RecordController : Controller
     {
         private RecordService _recordService;

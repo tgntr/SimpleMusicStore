@@ -13,18 +13,20 @@ namespace SimpleMusicStore.Web.Services
         private RecordService _recordService;
         private ArtistService _artistService;
         private LabelService _labelService;
+        private string _userId;
 
-        public CommentService(SimpleDbContext context)
+        public CommentService(SimpleDbContext context, string userId)
         {
             _context = context;
-            _recordService = new RecordService(context);
-            _artistService = new ArtistService(context);
-            _labelService = new LabelService(context);
+            _recordService = new RecordService(context, userId);
+            _artistService = new ArtistService(context, userId);
+            _labelService = new LabelService(context, userId);
+            _userId = userId;
         }
 
-        internal void AddComment<T>(int id, string userId, string content)
+        internal void AddComment<T>(int id, string content)
         {
-            Comment comment = new Comment { UserId = userId, Content = content };
+            Comment comment = new Comment { UserId = _userId, Content = content };
             if (typeof(T) == typeof(Record))
             {
                 if (!_recordService.IsValidRecordId(id))
@@ -63,12 +65,12 @@ namespace SimpleMusicStore.Web.Services
 
         
 
-        internal void RemoveComment(int commentId, string userId, bool isAdmin = false)
+        internal void RemoveComment(int commentId, bool isAdmin = false)
         {
 
             var comment = _context.Comments.FirstOrDefault();
 
-            if (comment is null || (comment.UserId != userId && !isAdmin))
+            if (comment is null || (comment.UserId != _userId && !isAdmin))
             {
                 return;
             }
@@ -76,6 +78,8 @@ namespace SimpleMusicStore.Web.Services
             _context.Comments.Remove(comment);
             _context.SaveChanges();
         }
+
+
 
         private Comment GetComment(int commentId) => _context.Comments.FirstOrDefault(c => c.Id == commentId);
     }

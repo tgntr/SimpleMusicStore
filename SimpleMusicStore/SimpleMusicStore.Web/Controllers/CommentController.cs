@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SimpleMusicStore.Data;
@@ -12,19 +13,18 @@ using SimpleMusicStore.Web.Services;
 
 namespace SimpleMusicStore.Web.Controllers
 {
+    [Authorize]
     public class CommentController : Controller
     {
         private CommentService _commentService;
-        private UserManager<SimpleUser> _userManager;
-
-        private string _userId;
+        
         private string _referrerUrl;
 
-        public CommentController(UserManager<SimpleUser> userManager, SimpleDbContext context)
+        public CommentController(SimpleDbContext context)
         {
-            _commentService = new CommentService(context);
-            _userManager = userManager;
-            _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _commentService = new CommentService(context, userId);
+            
             _referrerUrl = Request.Headers["Referer"].ToString();
         }
         
@@ -36,7 +36,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect(_referrerUrl);
             }
 
-            _commentService.AddComment<Record>(model.Id, _userId, model.Comment);
+            _commentService.AddComment<Record>(model.Id, model.Comment);
 
             return Redirect(_referrerUrl);
         }
@@ -49,7 +49,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect(_referrerUrl);
             }
 
-            _commentService.AddComment<Artist>(model.Id, _userId, model.Comment);
+            _commentService.AddComment<Artist>(model.Id, model.Comment);
 
             return Redirect(_referrerUrl);
         }
@@ -62,7 +62,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect(_referrerUrl);
             }
 
-            _commentService.AddComment<Label>(model.Id, _userId, model.Comment);
+            _commentService.AddComment<Label>(model.Id, model.Comment);
 
             return Redirect(_referrerUrl);
         }
@@ -70,11 +70,10 @@ namespace SimpleMusicStore.Web.Controllers
         public IActionResult RemoveComment(int commentId)
         {
             var isAdmin = User.IsInRole("Admin");
-            _commentService.RemoveComment(commentId, _userId, isAdmin);
+            _commentService.RemoveComment(commentId, isAdmin);
 
             return Redirect(_referrerUrl);
         }
-
-        public
+        
     }
 }

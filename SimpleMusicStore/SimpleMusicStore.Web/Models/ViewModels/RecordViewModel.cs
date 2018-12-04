@@ -34,5 +34,7 @@ namespace SimpleMusicStore.Web.Models.ViewModels
 
         [Required]
         public string Comment { get; set; }
+
+        public List<string> SelectedGenres { get; set; }
     }
 }

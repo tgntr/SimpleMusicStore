@@ -64,12 +64,7 @@ namespace SimpleMusicStore.Web.Controllers
 
             return View(viewModel);
         }
-
-
-
-
-
-
+        
         public IActionResult Labels(string orderBy = "")
         {
             List<LabelViewModel> labels;
@@ -102,12 +97,7 @@ namespace SimpleMusicStore.Web.Controllers
 
             return View(viewModel);
         }
-
-
-
-
-
-
+        
         public IActionResult Artists(string orderBy = "")
         {
             List<ArtistViewModel> artists;
@@ -141,10 +131,6 @@ namespace SimpleMusicStore.Web.Controllers
             return View(viewModel);
         }
 
-
-
-
-
         public IActionResult Genres(string genre, string orderBy = "")
         {
             if (_recordService.IsValidGenre(genre))
@@ -169,9 +155,7 @@ namespace SimpleMusicStore.Web.Controllers
             {
                 records = _recordService.All(genre).Select(_mapper.Map<RecordViewModel>).ToList();
             }
-
-
-
+            
             return View(records);
         }
     }

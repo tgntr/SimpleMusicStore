@@ -11,6 +11,7 @@ namespace SimpleMusicStore.Web.Services
     public class ArtistService
     {
         private SimpleDbContext _context;
+
         public ArtistService(SimpleDbContext context)
         {
             _context = context;

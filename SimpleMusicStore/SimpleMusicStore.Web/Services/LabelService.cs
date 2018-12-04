@@ -11,6 +11,7 @@ namespace SimpleMusicStore.Web.Services
     internal class LabelService
     {
         private SimpleDbContext _context;
+
         public LabelService(SimpleDbContext context)
         {
             _context = context;

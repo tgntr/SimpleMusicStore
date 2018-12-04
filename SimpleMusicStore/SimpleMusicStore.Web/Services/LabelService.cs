@@ -1,34 +1,21 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
+using SimpleMusicStore.Web.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace SimpleMusicStore.Web.Services
 {
-    internal class LabelService
+    internal class LabelService : Service
     {
-        private readonly SimpleDbContext _context;
-        private string _userId;
-
         internal LabelService(SimpleDbContext context, string userId)
+            : base(context, userId)
         {
-            _context = context;
-            _userId = userId;
         }
 
-        private List<Label> All()
-        {
-            return _context.Labels
-                .Include(l => l.Followers)
-                .Include(l=>l.Records)
-                    .ThenInclude(r=>r.Orders)
-                        .ThenInclude(o=>o.Order)
-                .ToList();
-        }
-
+       
 
 
         internal List<Label> All(string orderBy, string userId = "")
@@ -62,6 +49,18 @@ namespace SimpleMusicStore.Web.Services
             }
 
             return labels;
+        }
+
+
+
+        private List<Label> All()
+        {
+            return _context.Labels
+                .Include(l => l.Followers)
+                .Include(l => l.Records)
+                    .ThenInclude(r => r.Orders)
+                        .ThenInclude(o => o.Order)
+                .ToList();
         }
 
 
@@ -101,6 +100,8 @@ namespace SimpleMusicStore.Web.Services
             _context.LabelUsers.Add(labelUser);
             _context.SaveChanges();
         }
+
+
 
         internal void UnfollowLabel(int labelId)
         {

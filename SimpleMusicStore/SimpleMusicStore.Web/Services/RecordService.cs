@@ -1,51 +1,36 @@
 ﻿using AutoMapper;
 using Microsoft.EntityFrameworkCore;
-using Newtonsoft.Json;
 using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos;
 using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos.RecordDtos;
 using SimpleMusicStore.Web.Areas.Admin.Utilities;
+using SimpleMusicStore.Web.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net;
-using System.Threading.Tasks;
 
 namespace SimpleMusicStore.Web.Services
 {
-    internal class RecordService
+    internal class RecordService : Service
     {
-        
-        private SimpleDbContext _context;
         private IMapper _mapper;
-        private string _userId;
 
-        public RecordService(SimpleDbContext context)
-        {
-            _context = context;
-        }
 
+
+        //constructor for admin/record controller
         public RecordService(SimpleDbContext context, IMapper mapper)
+            :base (context)
         {
             _context = context;
             _mapper = mapper;
         }
-
-
-        public RecordService(SimpleDbContext context,  string userId)
-        {
-            _context = context;
-            _userId = userId;
-        }
-
-
-        public RecordService(SimpleDbContext context, IMapper mapper, string userId)
-        {
-            _context = context;
-            _mapper = mapper;
-            _userId = userId;
-        }
+        
+       public RecordService(SimpleDbContext context,  string userId)
+           :base (context, userId)
+       {
+       }
+        
 
 
 

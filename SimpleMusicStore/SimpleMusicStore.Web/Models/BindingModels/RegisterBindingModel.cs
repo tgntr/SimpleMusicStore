@@ -1,4 +1,5 @@
-﻿using System;
+﻿using SimpleMusicStore.Web.Models.Dtos;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -8,6 +9,8 @@ namespace SimpleMusicStore.Web.Models.BindingModels
 {
     public class RegisterBindingModel
     {
+        private List<AddressDto> addresses = new List<AddressDto>();
+
         [Required]
         [EmailAddress]
         [Display(Name = "Email")]
@@ -27,15 +30,30 @@ namespace SimpleMusicStore.Web.Models.BindingModels
         [Required]
         [Display(Name = "Country")]
         public string Country { get; set; }
-
+        
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
         [Display(Name = "City")]
         public string City { get; set; }
-
+        
         [Required]
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
         [Display(Name = "Street")]
         public string Street { get; set; }
+
+
+
+        public List<AddressDto> Addresses
+        {
+            get
+            {
+                var addresses = new List<AddressDto>();
+                addresses.Add(new AddressDto { Country = this.Country, City = this.City, Street = this.Street});
+                return addresses;
+            }
+
+        }
+
     }
+    
 }

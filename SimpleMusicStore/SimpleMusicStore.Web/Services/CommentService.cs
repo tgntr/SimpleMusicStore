@@ -1,5 +1,6 @@
 ﻿using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
+using SimpleMusicStore.Web.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -7,52 +8,49 @@ using System.Threading.Tasks;
 
 namespace SimpleMusicStore.Web.Services
 {
-    public class CommentService
+    internal class CommentService : Service
     {
-        private SimpleDbContext _context;
         private RecordService _recordService;
         private ArtistService _artistService;
         private LabelService _labelService;
-        private string _userId;
 
         public CommentService(SimpleDbContext context, string userId)
+            :base(context, userId)
         {
-            _context = context;
             _recordService = new RecordService(context, userId);
             _artistService = new ArtistService(context, userId);
             _labelService = new LabelService(context, userId);
-            _userId = userId;
         }
 
-        internal void AddComment<T>(int id, string content)
+        internal void AddComment<T>(int targetId, string content)
         {
             Comment comment = new Comment { UserId = _userId, Content = content };
             if (typeof(T) == typeof(Record))
             {
-                if (!_recordService.IsValidRecordId(id))
+                if (!_recordService.IsValidRecordId(targetId))
                 {
                     return;
                 }
 
-                comment.RecordId = id;
+                comment.RecordId = targetId;
             }
             else if (typeof(T) == typeof(Artist))
             {
-                if (!_artistService.IsValidArtistId(id))
+                if (!_artistService.IsValidArtistId(targetId))
                 { 
                     return;
                 }
 
-                comment.ArtistId = id;
+                comment.ArtistId = targetId;
             }
             else if (typeof(T) == typeof(Label))
             {
-                if (!_labelService.IsValidLabelId(id))
+                if (!_labelService.IsValidLabelId(targetId))
                 {
                     return;
                 }
 
-                comment.LabelId = id;
+                comment.LabelId = targetId;
             }
             else
             {

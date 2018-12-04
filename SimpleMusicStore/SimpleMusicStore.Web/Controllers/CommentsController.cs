@@ -14,13 +14,13 @@ using SimpleMusicStore.Web.Services;
 namespace SimpleMusicStore.Web.Controllers
 {
     [Authorize]
-    public class CommentController : Controller
+    public class CommentsController : Controller
     {
         private CommentService _commentService;
         
         private string _referrerUrl;
 
-        public CommentController(SimpleDbContext context)
+        public CommentsController(SimpleDbContext context)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             _commentService = new CommentService(context, userId);

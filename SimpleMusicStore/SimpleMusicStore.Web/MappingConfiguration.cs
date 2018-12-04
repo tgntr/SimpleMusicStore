@@ -3,8 +3,10 @@ using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Areas.Admin.Models;
 using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos;
 using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos.RecordDtos;
+using SimpleMusicStore.Web.Models.BindingModels;
 using SimpleMusicStore.Web.Models.Dtos;
 using SimpleMusicStore.Web.Models.ViewModels;
+using System.Collections.Generic;
 using System.Linq;
 
 namespace SimpleMusicStore
@@ -18,7 +20,7 @@ namespace SimpleMusicStore
                 .ForMember(v => v.Url, map => map.MapFrom(dto => dto.Uri));
 
             CreateMap<DiscogsLabelDto, Label>()
-                .ForMember(l=>l.ImageUrl, map=>map.MapFrom(dto=>dto.Images.First().Uri))
+                .ForMember(l => l.ImageUrl, map => map.MapFrom(dto => dto.Images.First().Uri))
                 .ForMember(l => l.DiscogsId, map => map.MapFrom(dto => dto.Id))
                 .ForMember(l => l.Id, map => map.Ignore());
 
@@ -47,7 +49,7 @@ namespace SimpleMusicStore
             CreateMap<DiscogsRecordDto, RecordAdminViewModel>()
                 .ForMember(r => r.Artist, map => map.MapFrom(dto => dto.Artists.First().Name))
                 .ForMember(r => r.Label, map => map.MapFrom(dto => dto.Labels.First().Name))
-                .ForMember(r=> r.ImageUrl, map => map.MapFrom(dto => dto.Images.First().Uri));
+                .ForMember(r => r.ImageUrl, map => map.MapFrom(dto => dto.Images.First().Uri));
 
             CreateMap<Record, RecordAdminViewModel>()
                 .ForMember(r => r.Artist, map => map.MapFrom(r => r.Artist.Name))
@@ -64,6 +66,13 @@ namespace SimpleMusicStore
 
 
 
+            CreateMap<AddressDto, Address>();
+
+            CreateMap<RegisterBindingModel, SimpleUser>()
+                .ForMember(u => u.UserName, map => map.MapFrom(rbm => rbm.Email));
+
+
+        
         }
     }
 }

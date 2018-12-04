@@ -24,7 +24,7 @@ namespace SimpleMusicStore.Web.Controllers
         public RecordsController(SimpleDbContext context, IMapper mapper)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _recordService = new RecordService(context, mapper, userId);
+            _recordService = new RecordService(context, userId);
             _mapper = mapper;
             _referrerUrl = Request.Headers["Referer"].ToString();
         }

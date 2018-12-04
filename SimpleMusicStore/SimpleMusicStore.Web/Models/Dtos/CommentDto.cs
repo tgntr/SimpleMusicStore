@@ -10,5 +10,7 @@ namespace SimpleMusicStore.Web.Models.Dtos
         public string User { get; set; }
 
         public string Content { get; set; }
+
+        public DateTime DatePosted { get; set; }
     }
 }

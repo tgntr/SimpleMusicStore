@@ -1,6 +1,7 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
+using SimpleMusicStore.Web.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -8,15 +9,12 @@ using System.Threading.Tasks;
 
 namespace SimpleMusicStore.Web.Services
 {
-    internal class ArtistService
+    internal class ArtistService : Service
     {
-        private SimpleDbContext _context;
-        private string _userId;
 
         internal ArtistService(SimpleDbContext context, string userId)
+            :base(context, userId)
         {
-            _context = context;
-            _userId = userId;
         }
 
         private List<Artist> All()

@@ -10,12 +10,15 @@ using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Models.BindingModels;
 using SimpleMusicStore.Web.Services;
-using SimpleMusicStore.Web.Utilities;
 
 namespace SimpleMusicStore.Web.Controllers
 {
-    public class AccountController : BaseController
+    public class AccountController : Controller
     {
+
+        private UserManager<SimpleUser> _userManager;
+        private SignInManager<SimpleUser> _signInManager;
+        private RoleManager<IdentityRole> _roleManager;
         private AddressService _addressService;
 
         public AccountController(
@@ -24,9 +27,12 @@ namespace SimpleMusicStore.Web.Controllers
            SimpleDbContext context,
            RoleManager<IdentityRole> roleManager
            )
-            :base(userManager, signInManager, roleManager)
         {
             _addressService = new AddressService(context);
+            _userManager = userManager;
+            _signInManager = signInManager;
+            _roleManager = roleManager;
+
         }
         
 

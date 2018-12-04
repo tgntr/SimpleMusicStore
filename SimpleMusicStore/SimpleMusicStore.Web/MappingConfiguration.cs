@@ -1,7 +1,10 @@
 ﻿using AutoMapper;
 using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Areas.Admin.Models;
-using SimpleMusicStore.Web.Areas.Admin.Models.RecordDtos;
+using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos;
+using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos.RecordDtos;
+using SimpleMusicStore.Web.Models.Dtos;
+using SimpleMusicStore.Web.Models.ViewModels;
 using System.Linq;
 
 namespace SimpleMusicStore
@@ -10,22 +13,54 @@ namespace SimpleMusicStore
     {
         public MappingConfiguration()
         {
-            CreateMap<RecordVideoDto, Video>()
+            //discogs mappings
+            CreateMap<DiscogsRecordVideoDto, Video>()
                 .ForMember(v => v.Url, map => map.MapFrom(dto => dto.Uri));
 
-            CreateMap<LabelDto, Label>()
+            CreateMap<DiscogsLabelDto, Label>()
                 .ForMember(l=>l.ImageUrl, map=>map.MapFrom(dto=>dto.Images.First().Uri))
                 .ForMember(l => l.DiscogsId, map => map.MapFrom(dto => dto.Id))
                 .ForMember(l => l.Id, map => map.Ignore());
 
-            CreateMap<ArtistDto, Artist>()
+            CreateMap<DiscogsArtistDto, Artist>()
                 .ForMember(a => a.ImageUrl, map => map.MapFrom(dto => dto.Images.First().Uri))
                 .ForMember(a => a.DiscogsId, map => map.MapFrom(dto => dto.Id))
                 .ForMember(a => a.Id, map => map.Ignore());
 
-            CreateMap<RecordTrackDto, Track>();
+            CreateMap<DiscogsRecordTrackDto, Track>();
 
-           
+
+
+
+
+            //view models
+            CreateMap<Video, VideoDto>();
+
+            CreateMap<Track, TrackDto>();
+
+            CreateMap<Label, LabelDto>();
+
+            CreateMap<Artist, ArtistDto>();
+
+            CreateMap<Record, RecordViewModel>();
+
+            CreateMap<DiscogsRecordDto, RecordAdminViewModel>()
+                .ForMember(r => r.Artist, map => map.MapFrom(dto => dto.Artists.First().Name))
+                .ForMember(r => r.Label, map => map.MapFrom(dto => dto.Labels.First().Name))
+                .ForMember(r=> r.ImageUrl, map => map.MapFrom(dto => dto.Images.First().Uri));
+
+            CreateMap<Record, RecordAdminViewModel>()
+                .ForMember(r => r.Artist, map => map.MapFrom(r => r.Artist.Name))
+                .ForMember(r => r.Label, map => map.MapFrom(r => r.Label.Name));
+
+            CreateMap<Record, RecordDto>();
+
+            CreateMap<Label, LabelViewModel>();
+
+            CreateMap<Artist, ArtistViewModel>();
+
+
+
         }
     }
 }

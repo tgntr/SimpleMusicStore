@@ -15,9 +15,8 @@ namespace SimpleMusicStore.Models
         [Required]
         public string Name { get; set; }
 
-        [Required]
         [Url]
-        public string ImageUrl { get; set; }
+        public string ImageUrl { get; set; } = @"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/12in-Vinyl-LP-Record-Angle.jpg/330px-12in-Vinyl-LP-Record-Angle.jpg";
 
         public string Description { get; set; }
 

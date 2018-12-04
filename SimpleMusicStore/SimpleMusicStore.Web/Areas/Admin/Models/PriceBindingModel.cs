@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SimpleMusicStore.Web.Areas.Admin.Models
 {
-    public class PreviewRecordBindingModel
+    public class PriceBindingModel
     {
         [Required]
         [Range(1, Int32.MaxValue, ErrorMessage = "Must be non-negative number")]

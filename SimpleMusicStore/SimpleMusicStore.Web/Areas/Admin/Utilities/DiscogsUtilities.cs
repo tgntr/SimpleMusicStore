@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
-using SimpleMusicStore.Web.Areas.Admin.Models;
-using SimpleMusicStore.Web.Areas.Admin.Models.RecordDtos;
+using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos;
+using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos.RecordDtos;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -15,9 +15,6 @@ namespace SimpleMusicStore.Web.Areas.Admin.Utilities
         private const string release = "releases";
         private const string label = "labels";
         private const string artist = "artists";
-
-        
-
         private const string master = "masters";
 
         internal const string ValidDiscogsUrlPattern = @"https:\/\/www\.discogs\.com\/([^\/]+\/)?((release)|(master))\/[0-9]+([^\/]+)?";
@@ -38,7 +35,7 @@ namespace SimpleMusicStore.Web.Areas.Admin.Utilities
                     return -1;
                 }
 
-                return Get<MasterDto>(discogsId).Main_Release;
+                return Get<DiscogsMasterDto>(discogsId).Main_Release;
             }
 
             return discogsId;
@@ -50,15 +47,15 @@ namespace SimpleMusicStore.Web.Areas.Admin.Utilities
 
 
             var typeOfContent = "";
-            if (typeof(T) == typeof(ArtistDto))
+            if (typeof(T) == typeof(DiscogsArtistDto))
             {
                 typeOfContent = artist;
             }
-            else if (typeof(T) == typeof(LabelDto))
+            else if (typeof(T) == typeof(DiscogsLabelDto))
             {
                 typeOfContent = label;
             }
-            else if (typeof(T) == typeof(MasterDto))
+            else if (typeof(T) == typeof(DiscogsMasterDto))
             {
                 typeOfContent = master;
             }
@@ -77,15 +74,14 @@ namespace SimpleMusicStore.Web.Areas.Admin.Utilities
         }
 
 
-        
 
-        
+
+        //validates that the provided url is a real discogs release page
         internal static bool IsValidDiscogsId(long id)
         {
-            //validates that the provided url is a real discogs release page
             try
             {
-                var recordDto = Get<RecordDto>(id);
+                var recordDto = Get<DiscogsRecordDto>(id);
             }
             catch (Exception)
             {
@@ -100,7 +96,7 @@ namespace SimpleMusicStore.Web.Areas.Admin.Utilities
         {
             try
             {
-                var recordDto = Get<MasterDto>(id);
+                var recordDto = Get<DiscogsMasterDto>(id);
             }
             catch (Exception)
             {

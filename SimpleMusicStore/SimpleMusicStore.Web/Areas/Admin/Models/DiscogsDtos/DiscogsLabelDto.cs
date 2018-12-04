@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleMusicStore.Web.Areas.Admin.Models
+namespace SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos
 {
-    public class LabelDto
+    public class DiscogsLabelDto
     {
         public int Id { get; set; }
 
@@ -13,6 +13,6 @@ namespace SimpleMusicStore.Web.Areas.Admin.Models
 
         public string Name { get; set; }
 
-        public ImageDto[] Images { get; set; }
+        public DiscogsImageDto[] Images { get; set; }
     }
 }

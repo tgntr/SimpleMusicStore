@@ -9,13 +9,12 @@ using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
-using SimpleMusicStore.Web.Areas.Admin.Services;
+using SimpleMusicStore.Web.Services;
 using SimpleMusicStore.Web.Models;
-using SimpleMusicStore.Web.Utilities;
 
 namespace SimpleMusicStore.Web.Controllers
 {
-    public class HomeController : BaseController
+    public class HomeController : Controller
     {
         public HomeController(
            UserManager<SimpleUser> userManager,
@@ -23,7 +22,6 @@ namespace SimpleMusicStore.Web.Controllers
            SimpleDbContext context,
            RoleManager<IdentityRole> roleManager
            )
-            : base(userManager, signInManager, roleManager)
         {
         }
         public IActionResult Index()
@@ -35,7 +33,12 @@ namespace SimpleMusicStore.Web.Controllers
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return View(new
+
+
+
+
+            { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
 
         

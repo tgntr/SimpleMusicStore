@@ -1,6 +1,5 @@
 ﻿using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
-using SimpleMusicStore.Web.Areas.Admin.Models.RecordDtos;
 using System.Linq;
 
 namespace SimpleMusicStore.Web.Services

@@ -3,9 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace SimpleMusicStore.Web.Areas.Admin.Models
+namespace SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos
 {
-    public class MasterDto
+    public class DiscogsMasterDto
     {
         public int Main_Release { get; set; }
     }

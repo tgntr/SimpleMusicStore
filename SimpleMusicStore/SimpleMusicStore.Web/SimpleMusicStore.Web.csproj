@@ -24,6 +24,9 @@
 
   <ItemGroup>
     <Folder Include="Areas\Admin\Data\" />
+    <Folder Include="Areas\Admin\Models\BindingModels\" />
+    <Folder Include="Areas\Admin\Services\" />
+    <Folder Include="Utilities\" />
   </ItemGroup>
 
   <ItemGroup>

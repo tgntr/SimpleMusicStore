@@ -18,7 +18,6 @@ namespace SimpleMusicStore.Models
         [Required]
         public int RecordId { get; set; }
         public Record Record { get; set; }
-
-        public List<Comment> Comments { get; set; } = new List<Comment>();
+       
     }
 }

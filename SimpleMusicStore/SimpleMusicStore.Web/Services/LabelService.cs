@@ -12,22 +12,35 @@ namespace SimpleMusicStore.Web.Services
     {
         private SimpleDbContext _context;
 
-        public LabelService(SimpleDbContext context)
+        internal LabelService(SimpleDbContext context)
         {
             _context = context;
         }
 
-        public List<Label> All()
+        private List<Label> All()
         {
             return _context.Labels
                 .Include(l=>l.Followers)
-                .Include(l=>l.Records)
                 .ToList();
         }
 
-        public Label GetLabel(int id)
+        internal List<Label> All(string orderBy)
         {
-            return _context.Labels.Include(l=>l.Records).FirstOrDefault(a => a.Id == id);
+
+        }
+
+        internal Label GetLabel(int id)
+        {
+            return _context.Labels
+                .Include(l=>l.Records)
+                .Include(l=>l.Comments)
+                    .ThenInclude(c=>c.User.UserName)
+                .FirstOrDefault(a => a.Id == id);
+        }
+
+        internal bool IsValidLabelId(int id)
+        {
+            return _context.Labels.Any(l => l.Id == id);
         }
     }
 }

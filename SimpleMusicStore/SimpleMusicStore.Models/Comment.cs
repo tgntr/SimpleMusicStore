@@ -17,5 +17,14 @@ namespace SimpleMusicStore.Models
         public string Content { get; set; }
 
         public DateTime DatePosted { get; set; } = DateTime.UtcNow;
+
+        public int? RecordId { get; set; }
+        public Record Record { get; set; }
+
+        public int? ArtistId { get; set; }
+        public Artist Artist { get; set; }
+
+        public int? LabelId { get; set; }
+        public Label Label { get; set; }
     }
 }

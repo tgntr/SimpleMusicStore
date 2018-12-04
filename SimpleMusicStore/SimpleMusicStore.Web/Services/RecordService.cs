@@ -19,7 +19,12 @@ namespace SimpleMusicStore.Web.Services
         
         private SimpleDbContext _context;
         private IMapper _mapper;
-        
+
+        public RecordService(SimpleDbContext context)
+        {
+            _context = context;
+        }
+
         public RecordService(SimpleDbContext context, IMapper mapper)
         {
             _context = context;
@@ -94,6 +99,18 @@ namespace SimpleMusicStore.Web.Services
             return record;
         }
 
+        internal int FindByDiscogsId(long discogsId)
+        {
+            var record = _context.Records.FirstOrDefault(r => r.DiscogsId == discogsId);
+
+            if (record is null)
+            {
+                return -1;
+            }
+
+            return record.Id;
+        }
+
         internal bool IsValidRecordId(int id)
         {
             return _context.Records.Any(r => r.Id == id);
@@ -106,12 +123,19 @@ namespace SimpleMusicStore.Web.Services
                 .Include(r=>r.Label)
                 .Include(r=>r.Videos)
                 .Include(r=>r.Tracks)
+                .Include(r=>r.Comments)
+                    .ThenInclude(c=>c.User.UserName)
                 .FirstOrDefault(r => r.Id == id);
         }
 
         internal void EditRecordPrice(int id, decimal price)
         {
             var record = GetRecord(id);
+            if (record.Price == price)
+            {
+                return;
+            }
+
             record.Price = price;
             _context.SaveChanges();
         }
@@ -124,34 +148,52 @@ namespace SimpleMusicStore.Web.Services
             _context.SaveChanges();
         }
 
-        internal List<Record> All()
+        private List<Record> All()
         {
             return _context.Records
                 .Include(r => r.Artist)
                 .Include(r => r.Label)
-                .Include(r => r.Videos)
-                .Include(r => r.Tracks)
-                .Include(r => r.WantedBy)
-                .Include(r => r.Orders)
+                .Include(r=>r.WantedBy)
+                .Include(r=>r.Orders)
                 .ToList();
         }
 
-        internal List<Record> All(string genre)
+        internal List<Record> All(string argument)
         {
-            return _context.Records
-                .Where(r=>r.Genre == genre)
-                .Include(r => r.Artist)
-                .Include(r => r.Label)
-                .Include(r => r.Videos)
-                .Include(r => r.Tracks)
-                .Include(r => r.WantedBy)
-                .Include(r => r.Orders)
-                .ToList();
+            List<Record> records;
+
+            if (argument == "newest")
+            {
+                records = All().OrderByDescending(r => r.DateAdded).ToList();
+            }
+            else if (argument == "alphabetically")
+            {
+                records = All().OrderBy(r => r.Title).ToList();
+            }
+            else if (argument == "popularity")
+            {
+                records = All().OrderByDescending(r => r.WantedBy.Count() + (r.Orders.Count() * 2)).ToList();
+            }
+            else if (IsValidGenre(argument))
+            {
+                records = All().Where(r => r.Genre == argument).ToList();
+            }
+            else
+            {
+                records = All().ToList();
+            }
+
+            return records;
         }
 
         internal bool IsValidGenre(string genre)
         {
+            if (genre is null)
+            {
+                return false;
+            }
             return _context.Records.Any(r => r.Genre == genre);
         }
+        
     }
 }

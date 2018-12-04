@@ -59,6 +59,9 @@ namespace SimpleMusicStore
 
             CreateMap<Artist, ArtistViewModel>();
 
+            CreateMap<Comment, CommentDto>()
+                .ForMember(c => c.User, map => map.MapFrom(c => c.User.UserName));
+
 
 
         }

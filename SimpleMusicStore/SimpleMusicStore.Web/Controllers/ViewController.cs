@@ -30,23 +30,7 @@ namespace SimpleMusicStore.Web.Controllers
 
         public IActionResult Records(string orderBy = "")
         {
-            List<RecordViewModel> records;
-            if (orderBy == "newest")
-            {
-                records = _recordService.All().OrderByDescending(r => r.DateAdded).Select(_mapper.Map<RecordViewModel>).ToList();
-            }
-            else if (orderBy == "alphabetically")
-            {
-                records = _recordService.All().OrderBy(r => r.Title).Select(_mapper.Map<RecordViewModel>).ToList();
-            }
-            else if (orderBy == "popularity")
-            {
-                records = _recordService.All().OrderByDescending(r => r.WantedBy.Count() + r.Orders.Count()).Select(_mapper.Map<RecordViewModel>).ToList();
-            }
-            else
-            {
-                records = _recordService.All().Select(_mapper.Map<RecordViewModel>).ToList();
-            }
+            List<RecordViewModel> records = _recordService.All(orderBy).Select(_mapper.Map<RecordViewModel>).ToList();
 
             return View(records);
         }
@@ -67,19 +51,7 @@ namespace SimpleMusicStore.Web.Controllers
         
         public IActionResult Labels(string orderBy = "")
         {
-            List<LabelViewModel> labels;
-            if (orderBy == "alphabetically")
-            {
-                labels = _labelService.All().OrderBy(l => l.Name).Select(_mapper.Map<LabelViewModel>).ToList();
-            }
-            else if (orderBy == "popularity")
-            {
-                labels = _labelService.All().OrderByDescending(l => l.Followers.Count()).Select(_mapper.Map<LabelViewModel>).ToList();
-            }
-            else
-            {
-                labels = _labelService.All().Select(_mapper.Map<LabelViewModel>).ToList();
-            }
+            List<LabelViewModel> labels = _labelService.All(orderBy).Select(_mapper.Map<LabelViewModel>).ToList();
 
             return View(labels);
         }
@@ -100,19 +72,7 @@ namespace SimpleMusicStore.Web.Controllers
         
         public IActionResult Artists(string orderBy = "")
         {
-            List<ArtistViewModel> artists;
-            if (orderBy == "alphabetically")
-            {
-                artists = _artistService.All().OrderBy(a => a.Name).Select(_mapper.Map<ArtistViewModel>).ToList();
-            }
-            else if (orderBy == "popularity")
-            {
-                artists = _artistService.All().OrderByDescending(a => a.Followers.Count()).Select(_mapper.Map<ArtistViewModel>).ToList();
-            }
-            else
-            {
-                artists = _artistService.All().Select(_mapper.Map<ArtistViewModel>).ToList();
-            }
+            List<ArtistViewModel> artists = _artistService.All(orderBy).Select(_mapper.Map<ArtistViewModel>).ToList();
 
             return View(artists);
         }
@@ -138,23 +98,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return RedirectToAction("Records");
             }
 
-            List<RecordViewModel> records;
-            if (orderBy == "newest")
-            {
-                records = _recordService.All(genre).OrderByDescending(r => r.DateAdded).Select(_mapper.Map<RecordViewModel>).ToList();
-            }
-            else if (orderBy == "alphabetically")
-            {
-                records = _recordService.All(genre).OrderBy(r => r.Title).Select(_mapper.Map<RecordViewModel>).ToList();
-            }
-            else if (orderBy == "popularity")
-            {
-                records = _recordService.All(genre).OrderByDescending(r => r.WantedBy.Count() + r.Orders.Count()).Select(_mapper.Map<RecordViewModel>).ToList();
-            }
-            else
-            {
-                records = _recordService.All(genre).Select(_mapper.Map<RecordViewModel>).ToList();
-            }
+            List<RecordViewModel> records = _recordService.All(genre).Select(_mapper.Map<RecordViewModel>).ToList();
             
             return View(records);
         }

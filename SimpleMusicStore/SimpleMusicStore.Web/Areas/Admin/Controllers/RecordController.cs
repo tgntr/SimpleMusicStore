@@ -56,7 +56,11 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
                 return RedirectToAction("Add");
             }
 
-            //TODO if already in store redirect to record page
+            var recordId = _recordService.FindByDiscogsId(discogsId);
+            if (recordId >= 0)
+            {
+                return Redirect($"/view/records/{recordId}");
+            }
 
             var discogsRecordDto = DiscogsUtilities.Get<DiscogsRecordDto>(discogsId);
 
@@ -66,9 +70,9 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Preview(long discogsId, PriceBindingModel model)
+        public IActionResult Preview(long discogsId, RecordAdminViewModel model)
         {
-            if (!DiscogsUtilities.IsValidDiscogsId(discogsId) || !ModelState.IsValid)
+            if (!DiscogsUtilities.IsValidDiscogsId(discogsId) || !ModelState.IsValid) 
             {
                 return RedirectToAction("Add");
             }
@@ -76,15 +80,15 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
             var recordDto = DiscogsUtilities.Get<DiscogsRecordDto>(discogsId);
             _recordService.AddRecord(recordDto, model.Price);
 
-            //TODO redirect to record page
-            return Redirect("/");
+            var recordId = _recordService.FindByDiscogsId(discogsId);
+            return Redirect($"/view/records/{recordId}");
         }
 
         public IActionResult Edit(int id)
         {
             if (!_recordService.IsValidRecordId(id))
             {
-                return Redirect("/");
+                return Redirect("/view/records");
             }
 
             var record = _recordService.GetRecord(id);
@@ -94,24 +98,23 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, PriceBindingModel model)
+        public IActionResult Edit(int id, RecordAdminViewModel model)
         {
-            if (!_recordService.IsValidRecordId(id) || ModelState.IsValid)
+            if (!_recordService.IsValidRecordId(id) || !ModelState.IsValid)
             {
-                return Redirect("/");
+                return Redirect("/view/records");
             }
 
             _recordService.EditRecordPrice(id, model.Price);
-
-            //TODO redirect to record page
-            return Redirect("/");
+            
+            return Redirect($"/view/records/{id}");
         }
 
         public IActionResult Remove(int id)
         {
             if (!_recordService.IsValidRecordId(id))
             {
-                return Redirect("/");
+                return Redirect("/view/records");
             }
 
             var record = _recordService.GetRecord(id);
@@ -125,12 +128,12 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         {
             if (!_recordService.IsValidRecordId(id))
             {
-                return Redirect("/");
+                return Redirect("/view/records");
             }
 
             _recordService.RemoveRecord(id);
             
-            return Redirect("/");
+            return Redirect("/view/records");
         }
 
 

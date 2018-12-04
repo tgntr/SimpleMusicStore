@@ -57,14 +57,7 @@ namespace SimpleMusicStore.Web.Controllers
                     var address = new Address { Country = model.Country, City = model.City, Street = model.Street, User = user };
                     _addressService.AddAddress(address);
 
-                    await FirstRegisteredUserIsAdmin(user);
-
-                    var code = await _userManager.GenerateEmailConfirmationTokenAsync(user);
-                    var callbackUrl = Url.Page(
-                        "/Account/ConfirmEmail",
-                        pageHandler: null,
-                        values: new { userId = user.Id, code = code },
-                        protocol: Request.Scheme);
+                    await MakeFirstUserAdmin(user);
 
 
                     await _signInManager.SignInAsync(user, isPersistent: false);
@@ -95,10 +88,6 @@ namespace SimpleMusicStore.Web.Controllers
                 {
                     return Redirect("/");
                 }
-                if (result.IsLockedOut)
-                {
-                    return RedirectToPage("./Lockout");
-                }
                 else
                 {
                     ModelState.AddModelError(string.Empty, "Invalid login attempt.");
@@ -117,7 +106,7 @@ namespace SimpleMusicStore.Web.Controllers
             return RedirectToAction("Login");
         }
 
-        private async Task FirstRegisteredUserIsAdmin(SimpleUser user)
+        private async Task MakeFirstUserAdmin(SimpleUser user)
         {
             bool x = await _roleManager.RoleExistsAsync("Admin");
             if (!x)

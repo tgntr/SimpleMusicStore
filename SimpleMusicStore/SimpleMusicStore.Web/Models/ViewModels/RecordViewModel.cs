@@ -1,6 +1,7 @@
 ﻿using SimpleMusicStore.Web.Models.Dtos;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -8,6 +9,7 @@ namespace SimpleMusicStore.Web.Models.ViewModels
 {
     public class RecordViewModel
     {
+        [Required]
         public int Id { get; set; }
 
         public string Title { get; set; }
@@ -27,5 +29,10 @@ namespace SimpleMusicStore.Web.Models.ViewModels
         public ArtistDto Artist { get; set; }
 
         public LabelDto Label { get; set; }
+
+        public List<CommentDto> Comments { get; set; }
+
+        [Required]
+        public string Comment { get; set; }
     }
 }

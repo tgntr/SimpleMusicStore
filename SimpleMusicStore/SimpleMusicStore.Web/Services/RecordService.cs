@@ -16,21 +16,18 @@ namespace SimpleMusicStore.Web.Services
     {
         private IMapper _mapper;
 
-
-
-        //constructor for admin/record controller
+        
         public RecordService(SimpleDbContext context, IMapper mapper)
             :base (context)
         {
-            _context = context;
             _mapper = mapper;
         }
-        
-       public RecordService(SimpleDbContext context,  string userId)
-           :base (context, userId)
-       {
-       }
-        
+
+
+        public RecordService(SimpleDbContext context)
+            : base(context)
+        {
+        }
 
 
 
@@ -178,7 +175,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal List<Record> All(string orderBy, List<string> genres = null)
+        internal List<Record> All(string orderBy, string userId, List<string> genres = null)
         {
             List<Record> records;
 
@@ -190,22 +187,32 @@ namespace SimpleMusicStore.Web.Services
             {
                 records = All(genres).OrderBy(r => r.Title).ToList();
             }
-            else if (orderBy == "popularity" || (orderBy == "recommended" && _userId == ""))
+            else if (orderBy == "popularity" || (orderBy == "recommended" && userId == ""))
             {
                 records = All(genres).OrderByDescending(r => r.WantedBy.Count() + (r.Orders.Count() * 2)).ToList();
             }
             else if (orderBy == "recommended")
             {
-                records = All(genres).OrderByDescending(r =>
+                records = All(genres).OrderByDescending(record =>
                 {
-                    if (r.Orders.Any(o => o.Order.UserId == _userId))
+                    if (record.Orders.Any(o => o.Order.UserId == userId))
                     {
                         return -1;
                     }
-                    
-                    var artistIsFollowed = r.Artist.Followers.Where(f => f.UserId == _userId).Count() + 5;
-                    var labelIsFollowed = r.Label.Followers.Where(f => f.UserId == _userId).Count() + 5;
-                    var artistOrLabelOrderCount = r.Orders.Where(o => o.Record.ArtistId == r.ArtistId || o.Record.LabelId == r.LabelId).Count();
+
+                    var artistIsFollowed = 0;
+                    if (record.Artist.Followers.Any(f => f.UserId == userId))
+                    {
+                        artistIsFollowed = 10;
+                    }
+                    var labelIsFollowed = 0;
+                    if (record.Label.Followers.Any(f => f.UserId == userId))
+                    {
+                        labelIsFollowed = 10;
+                    }
+                    var artistOrLabelOrderCount = record.Orders.Where(o => (o.Record.ArtistId == record.ArtistId || o.Record.LabelId == record.LabelId) && o.Order.UserId == userId).Count();
+                    var artistOrLabelWantlistCount = record.WantedBy.Where(w => (w.Record.ArtistId == record.ArtistId || w.Record.LabelId == record.LabelId) && w.UserId == userId).Count();
+
 
                     return artistIsFollowed + labelIsFollowed + artistOrLabelOrderCount;
                 })
@@ -213,7 +220,7 @@ namespace SimpleMusicStore.Web.Services
             }
             else
             {
-                records = All().ToList();
+                records = All(genres).ToList();
             }
 
             return records;
@@ -234,7 +241,7 @@ namespace SimpleMusicStore.Web.Services
                     .ThenInclude(o => o.Order)
                 .ToList();
 
-            if (genres != null)
+            if (genres != null && genres.Count > 0)
             {
                 records = records.Where(r => genres.Contains(r.Genre)).ToList();
             }
@@ -244,14 +251,14 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal void AddToWantlist(int recordId)
+        internal void AddToWantlist(int recordId, string userId)
         {
             if (!IsValidRecordId(recordId))
             {
                 return;
             }
 
-            var recordUser = new RecordUser { RecordId = recordId, UserId = _userId };
+            var recordUser = new RecordUser { RecordId = recordId, UserId = userId };
 
             if (_context.RecordUsers.Contains(recordUser))
             {
@@ -261,14 +268,14 @@ namespace SimpleMusicStore.Web.Services
             _context.SaveChanges();
         }
 
-        internal void RemoveFromWantlist(int recordId)
+        internal void RemoveFromWantlist(int recordId, string userId)
         {
             if (!IsValidRecordId(recordId))
             {
                 return;
             }
 
-            var recordUser = new RecordUser { RecordId = recordId, UserId = _userId };
+            var recordUser = new RecordUser { RecordId = recordId, UserId = userId };
 
             if (!_context.RecordUsers.Contains(recordUser))
             {
@@ -279,7 +286,10 @@ namespace SimpleMusicStore.Web.Services
 
         }
 
-
+        internal List<Record> AllFollowed(string userId)
+        {
+            return All().Where(r => r.WantedBy.Any(f => f.UserId == userId)).ToList();
+        }
 
 
 

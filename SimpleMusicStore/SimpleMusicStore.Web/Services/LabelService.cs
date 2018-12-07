@@ -10,15 +10,15 @@ namespace SimpleMusicStore.Web.Services
 {
     internal class LabelService : Service
     {
-        internal LabelService(SimpleDbContext context, string userId)
-            : base(context, userId)
+        internal LabelService(SimpleDbContext context)
+            : base(context)
         {
         }
 
        
 
 
-        internal List<Label> All(string orderBy, string userId = "")
+        internal List<Label> All(string orderBy, string userId)
         {
             List<Label> labels;
             if (orderBy == "alphabetically")
@@ -84,13 +84,13 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal void FollowLabel(int labelId)
+        internal void FollowLabel(int labelId, string userId)
         {
             if (!IsValidLabelId(labelId))
             {
                 return;
             }
-            var labelUser = new LabelUser { LabelId = labelId, UserId = _userId };
+            var labelUser = new LabelUser { LabelId = labelId, UserId = userId };
 
             if (_context.LabelUsers.Contains(labelUser))
             {
@@ -103,14 +103,14 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal void UnfollowLabel(int labelId)
+        internal void UnfollowLabel(int labelId, string userId)
         {
             if (!IsValidLabelId(labelId))
             {
                 return;
             }
 
-            var labelUser = new LabelUser { LabelId = labelId, UserId = _userId };
+            var labelUser = new LabelUser { LabelId = labelId, UserId = userId };
 
             if (!_context.LabelUsers.Contains(labelUser))
             {
@@ -119,6 +119,11 @@ namespace SimpleMusicStore.Web.Services
 
             _context.LabelUsers.Remove(labelUser);
             _context.SaveChanges();
+        }
+
+        internal List<Label> AllFollowed(string userId)
+        {
+            return All().Where(l => l.Followers.Any(f => f.UserId == userId)).ToList();
         }
     }
 }

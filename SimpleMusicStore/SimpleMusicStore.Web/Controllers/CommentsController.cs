@@ -20,11 +20,14 @@ namespace SimpleMusicStore.Web.Controllers
         
         private string _referrerUrl;
 
+        private string _userId;
+
         public CommentsController(SimpleDbContext context)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _commentService = new CommentService(context, userId);
-            
+            _commentService = new CommentService(context);
+
+            _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
             _referrerUrl = Request.Headers["Referer"].ToString();
         }
         
@@ -36,7 +39,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect(_referrerUrl);
             }
 
-            _commentService.AddComment<Record>(model.Id, model.Comment);
+            _commentService.AddComment<Record>(model.Id, model.Comment, _userId);
 
             return Redirect(_referrerUrl);
         }
@@ -49,7 +52,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect(_referrerUrl);
             }
 
-            _commentService.AddComment<Artist>(model.Id, model.Comment);
+            _commentService.AddComment<Artist>(model.Id, model.Comment, _userId);
 
             return Redirect(_referrerUrl);
         }
@@ -62,7 +65,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect(_referrerUrl);
             }
 
-            _commentService.AddComment<Label>(model.Id, model.Comment);
+            _commentService.AddComment<Label>(model.Id, model.Comment, _userId);
 
             return Redirect(_referrerUrl);
         }
@@ -70,7 +73,7 @@ namespace SimpleMusicStore.Web.Controllers
         public IActionResult RemoveComment(int commentId)
         {
             var isAdmin = User.IsInRole("Admin");
-            _commentService.RemoveComment(commentId, isAdmin);
+            _commentService.RemoveComment(commentId, _userId, isAdmin);
 
             return Redirect(_referrerUrl);
         }

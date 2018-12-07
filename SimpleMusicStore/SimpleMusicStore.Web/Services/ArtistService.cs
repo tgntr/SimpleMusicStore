@@ -12,8 +12,8 @@ namespace SimpleMusicStore.Web.Services
     internal class ArtistService : Service
     {
 
-        internal ArtistService(SimpleDbContext context, string userId)
-            :base(context, userId)
+        internal ArtistService(SimpleDbContext context)
+            :base(context)
         {
         }
 
@@ -27,14 +27,14 @@ namespace SimpleMusicStore.Web.Services
                 .ToList();
         }
 
-        internal List<Artist> All(string orderBy)
+        internal List<Artist> All(string orderBy, string userId)
         {
             List<Artist> artists;
             if (orderBy == "alphabetically")
             {
                 artists = All().OrderBy(a => a.Name).ToList();
             }
-            else if (orderBy == "popularity" || (orderBy == "recommended" && _userId == ""))
+            else if (orderBy == "popularity" || (orderBy == "recommended" && userId == ""))
             {
                 artists = All().OrderByDescending(a => a.Followers.Count() + a.Records.Sum(r => r.Orders.Count())).ToList();
             }
@@ -42,11 +42,11 @@ namespace SimpleMusicStore.Web.Services
             {
                 artists = All().OrderByDescending(a =>
                 {
-                    if (a.Followers.Any(f => f.UserId == _userId))
+                    if (a.Followers.Any(f => f.UserId == userId))
                     {
                         return -1;
                     }
-                    var labelOrders = a.Records.Where(r => r.Orders.Any(o => o.Order.UserId == _userId)).Count();
+                    var labelOrders = a.Records.Where(r => r.Orders.Any(o => o.Order.UserId == userId)).Count();
 
                     return labelOrders;
                 })
@@ -78,14 +78,14 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal void FollowArtist(int artistId)
+        internal void FollowArtist(int artistId, string userId)
         {
             if (!IsValidArtistId(artistId))
             {
                 return;
             }
 
-            var artistUser = new ArtistUser { ArtistId = artistId, UserId = _userId };
+            var artistUser = new ArtistUser { ArtistId = artistId, UserId = userId };
 
             if (_context.ArtistUsers.Contains(artistUser))
             {
@@ -96,14 +96,14 @@ namespace SimpleMusicStore.Web.Services
             _context.SaveChanges();
         }
 
-        internal void UnfollowArtist(int artistId)
+        internal void UnfollowArtist(int artistId, string userId)
         {
             if (!IsValidArtistId(artistId))
             {
                 return;
             }
 
-            var artistUser = new ArtistUser { ArtistId = artistId, UserId = _userId };
+            var artistUser = new ArtistUser { ArtistId = artistId, UserId = userId };
 
             if (!_context.ArtistUsers.Contains(artistUser))
             {
@@ -112,6 +112,11 @@ namespace SimpleMusicStore.Web.Services
 
             _context.ArtistUsers.Remove(artistUser);
             _context.SaveChanges();
+        }
+
+        internal List<Artist> AllFollowed(string userId)
+        {
+            return All().Where(a => a.Followers.Any(f => f.UserId == userId)).ToList();
         }
     }
 }

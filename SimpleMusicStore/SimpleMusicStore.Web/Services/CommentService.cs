@@ -14,17 +14,17 @@ namespace SimpleMusicStore.Web.Services
         private ArtistService _artistService;
         private LabelService _labelService;
 
-        public CommentService(SimpleDbContext context, string userId)
-            :base(context, userId)
+        public CommentService(SimpleDbContext context)
+            :base(context)
         {
-            _recordService = new RecordService(context, userId);
-            _artistService = new ArtistService(context, userId);
-            _labelService = new LabelService(context, userId);
+            _recordService = new RecordService(context);
+            _artistService = new ArtistService(context);
+            _labelService = new LabelService(context);
         }
 
-        internal void AddComment<T>(int targetId, string content)
+        internal void AddComment<T>(int targetId, string content, string userId)
         {
-            Comment comment = new Comment { UserId = _userId, Content = content };
+            Comment comment = new Comment { UserId = userId, Content = content };
             if (typeof(T) == typeof(Record))
             {
                 if (!_recordService.IsValidRecordId(targetId))
@@ -63,12 +63,12 @@ namespace SimpleMusicStore.Web.Services
 
         
 
-        internal void RemoveComment(int commentId, bool isAdmin = false)
+        internal void RemoveComment(int commentId, string userId, bool isAdmin)
         {
 
             var comment = _context.Comments.FirstOrDefault();
 
-            if (comment is null || (comment.UserId != _userId && !isAdmin))
+            if (comment is null || (comment.UserId != userId && !isAdmin))
             {
                 return;
             }

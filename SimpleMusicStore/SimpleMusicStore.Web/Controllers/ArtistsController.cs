@@ -22,8 +22,7 @@ namespace SimpleMusicStore.Web.Controllers
 
         public ArtistsController(SimpleDbContext context, IMapper mapper)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _artistService = new ArtistService(context, userId);
+            _artistService = new ArtistService(context);
             _mapper = mapper;
             _referrerUrl = Request.Headers["Referer"].ToString();
         }
@@ -32,7 +31,12 @@ namespace SimpleMusicStore.Web.Controllers
 
         public IActionResult All(string orderBy = "")
         {
-            List<ArtistViewModel> artists = _artistService.All(orderBy).Select(_mapper.Map<ArtistViewModel>).ToList();
+            var userId = "";
+            if (User != null)
+            {
+                userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            List<ArtistViewModel> artists = _artistService.All(orderBy, userId).Select(_mapper.Map<ArtistViewModel>).ToList();
 
             return View(artists);
         }
@@ -56,7 +60,8 @@ namespace SimpleMusicStore.Web.Controllers
         [Authorize]
         public IActionResult Follow(int id)
         {
-            _artistService.FollowArtist(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _artistService.FollowArtist(id, userId);
 
             return Redirect(_referrerUrl);
         }
@@ -65,8 +70,9 @@ namespace SimpleMusicStore.Web.Controllers
         [Authorize]
         public IActionResult Unfollow(int id)
         {
-            _artistService.UnfollowArtist(id);
-
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _artistService.UnfollowArtist(id, userId);
+        
             return Redirect(_referrerUrl);
         }
 

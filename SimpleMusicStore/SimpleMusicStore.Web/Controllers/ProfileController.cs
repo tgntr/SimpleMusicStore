@@ -34,13 +34,13 @@ namespace SimpleMusicStore.Web.Controllers
             _signInManager = signInManager;
             _roleManager = roleManager;
             _mapper = mapper;
-
         }
 
 
         public IActionResult Register()
         {
             return View();
+            
         }
 
         [HttpPost]
@@ -78,6 +78,9 @@ namespace SimpleMusicStore.Web.Controllers
         {
             return View();
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginBindingModel model)

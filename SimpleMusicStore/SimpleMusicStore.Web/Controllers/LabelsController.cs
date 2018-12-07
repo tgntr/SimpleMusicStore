@@ -22,8 +22,7 @@ namespace SimpleMusicStore.Web.Controllers
 
         public LabelsController(SimpleDbContext context, IMapper mapper)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _labelService = new LabelService(context, userId);
+            _labelService = new LabelService(context);
             _mapper = mapper;
             _referrerUrl = Request.Headers["Referer"].ToString();
         }
@@ -32,7 +31,12 @@ namespace SimpleMusicStore.Web.Controllers
 
         public IActionResult All(string orderBy = "")
         {
-            List<LabelViewModel> labels = _labelService.All(orderBy).Select(_mapper.Map<LabelViewModel>).ToList();
+            var userId = "";
+            if (User != null)
+            {
+                userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            List<LabelViewModel> labels = _labelService.All(orderBy, userId).Select(_mapper.Map<LabelViewModel>).ToList();
 
             return View(labels);
         }
@@ -55,7 +59,8 @@ namespace SimpleMusicStore.Web.Controllers
         [Authorize]
         public IActionResult FollowLabel(int id)
         {
-            _labelService.FollowLabel(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _labelService.FollowLabel(id, userId);
 
             return Redirect(_referrerUrl);
         }
@@ -65,9 +70,20 @@ namespace SimpleMusicStore.Web.Controllers
         [Authorize]
         public IActionResult UnfollowLabel(int id)
         {
-            _labelService.UnfollowLabel(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _labelService.UnfollowLabel(id, userId);
 
             return Redirect(_referrerUrl);
+        }
+
+        [Authorize]
+        public IActionResult Followed()
+        {
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            var labels = _labelService.AllFollowed(userId).Select(_mapper.Map<LabelViewModel>).ToList();
+
+            return View(labels);
         }
     }
 }

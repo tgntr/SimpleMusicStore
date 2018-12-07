@@ -11,6 +11,8 @@ using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Services;
 using SimpleMusicStore.Web.Models;
+using System.Security.Claims;
+using Microsoft.EntityFrameworkCore;
 
 namespace SimpleMusicStore.Web.Controllers
 {
@@ -23,24 +25,23 @@ namespace SimpleMusicStore.Web.Controllers
            RoleManager<IdentityRole> roleManager
            )
         {
+            if (User != null)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
         }
         public IActionResult Index()
         {
-            
+
             return View();
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
         public IActionResult Error()
         {
-            return View(new
+            return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 
 
-
-
-            { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
-
-        
     }
 }

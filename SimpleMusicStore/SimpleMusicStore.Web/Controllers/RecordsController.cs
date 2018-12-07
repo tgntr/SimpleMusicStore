@@ -23,8 +23,7 @@ namespace SimpleMusicStore.Web.Controllers
 
         public RecordsController(SimpleDbContext context, IMapper mapper)
         {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _recordService = new RecordService(context, userId);
+            _recordService = new RecordService(context);
             _mapper = mapper;
             _referrerUrl = Request.Headers["Referer"].ToString();
         }
@@ -34,7 +33,12 @@ namespace SimpleMusicStore.Web.Controllers
 
         public IActionResult All(string orderBy = "")
         {
-            var records = _recordService.All(orderBy).Select(_mapper.Map<RecordViewModel>).ToList();
+            var userId = "";
+            if (User != null)
+            {
+                userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            var records = _recordService.All(orderBy, userId).Select(_mapper.Map<RecordViewModel>).ToList();
             var allRecordsViewModel = new AllRecordsViewModel { Records = records };
 
             return View(allRecordsViewModel);
@@ -46,7 +50,12 @@ namespace SimpleMusicStore.Web.Controllers
         [HttpPost]
         public IActionResult All(AllRecordsViewModel model, string orderBy = "")
         {
-            var records = _recordService.All(orderBy, model.SelectedGenres).Select(_mapper.Map<RecordViewModel>).ToList();
+            var userId = "";
+            if (User != null)
+            {
+                userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            }
+            var records = _recordService.All(orderBy, userId, model.SelectedGenres).Select(_mapper.Map<RecordViewModel>).ToList();
             model.Records = records;
 
             return View(model);
@@ -74,7 +83,8 @@ namespace SimpleMusicStore.Web.Controllers
         [Authorize]
         public IActionResult AddToWantlist(int id)
         {
-            _recordService.AddToWantlist(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _recordService.AddToWantlist(id, userId);
 
             return Redirect(_referrerUrl);
         }
@@ -84,7 +94,8 @@ namespace SimpleMusicStore.Web.Controllers
         [Authorize]
         public IActionResult RemoveFromWantList(int id)
         {
-            _recordService.RemoveFromWantlist(id);
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            _recordService.RemoveFromWantlist(id, userId);
 
             return Redirect(_referrerUrl);
         }

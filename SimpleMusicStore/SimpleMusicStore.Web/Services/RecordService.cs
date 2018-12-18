@@ -175,7 +175,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal List<Record> All(string orderBy, string userId, List<string> genres = null)
+        internal List<Record> All(string orderBy, string userId = null, List<string> genres = null)
         {
             List<Record> records;
 
@@ -187,7 +187,7 @@ namespace SimpleMusicStore.Web.Services
             {
                 records = All(genres).OrderBy(r => r.Title).ToList();
             }
-            else if (orderBy == "popularity" || (orderBy == "recommended" && userId == ""))
+            else if (orderBy == "popularity" || (orderBy == "recommended" && userId == null))
             {
                 records = All(genres).OrderByDescending(r => r.WantedBy.Count() + (r.Orders.Count() * 2)).ToList();
             }

@@ -27,16 +27,16 @@ namespace SimpleMusicStore.Web.Services
                 .ToList();
         }
 
-        internal List<Artist> All(string orderBy, string userId)
+        internal List<Artist> All(string orderBy, string userId = null)
         {
             List<Artist> artists;
             if (orderBy == "alphabetically")
             {
                 artists = All().OrderBy(a => a.Name).ToList();
             }
-            else if (orderBy == "popularity" || (orderBy == "recommended" && userId == ""))
+            else if (orderBy == "popularity" || (orderBy == "recommended" && userId == null))
             {
-                artists = All().OrderByDescending(a => a.Followers.Count() + a.Records.Sum(r => r.Orders.Count())).ToList();
+                artists = All().OrderByDescending(a => a.Followers.Count() + a.Records.Sum(r => (r.Orders.Count() * 2) + r.WantedBy.Count())).ToList();
             }
             else if (orderBy == "recommended")
             {
@@ -46,9 +46,9 @@ namespace SimpleMusicStore.Web.Services
                     {
                         return -1;
                     }
-                    var labelOrders = a.Records.Where(r => r.Orders.Any(o => o.Order.UserId == userId)).Count();
+                    var artistOrder = a.Records.Where(r => r.Orders.Any(o => o.Order.UserId == userId)).Count();
 
-                    return labelOrders;
+                    return artistOrder;
                 })
                 .ToList();
             }

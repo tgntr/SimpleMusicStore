@@ -13,27 +13,43 @@ using SimpleMusicStore.Web.Services;
 using SimpleMusicStore.Web.Models;
 using System.Security.Claims;
 using Microsoft.EntityFrameworkCore;
+using SimpleMusicStore.Web.Models.ViewModels;
+using AutoMapper;
 
 namespace SimpleMusicStore.Web.Controllers
 {
     public class HomeController : Controller
     {
+        private readonly RecordService _recordService;
+        private readonly LabelService _labelService;
+        private readonly ArtistService _artistService;
+        private readonly IMapper _mapper;
+
+
         public HomeController(
-           UserManager<SimpleUser> userManager,
-           SignInManager<SimpleUser> signInManager,
            SimpleDbContext context,
-           RoleManager<IdentityRole> roleManager
+           IMapper mapper
            )
         {
-            if (User != null)
+            _recordService = new RecordService(context);
+            _labelService = new LabelService(context);
+            _artistService = new ArtistService(context);
+            _mapper = mapper;
+        }
+        public  IActionResult Index()
+        {
+            var homeViewModel = new HomeViewModel();
+            if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                homeViewModel.RecommendedRecords = _recordService.All("recommended", userId).Select(_mapper.Map < RecordViewModel>).Take(10).ToList();
             }
-        }
-        public IActionResult Index()
-        {
 
-            return View();
+            homeViewModel.MostPopularRecords = _recordService.All("popularity").Select(_mapper.Map<RecordViewModel>).Take(5).ToList();
+            homeViewModel.MostPopularArtists = _artistService.All("popularity").Select(_mapper.Map<ArtistViewModel>).Take(5).ToList();
+            homeViewModel.MostPopularLabels = _labelService.All("popularity").Select(_mapper.Map<LabelViewModel>).Take(5).ToList();
+
+            return View(homeViewModel);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

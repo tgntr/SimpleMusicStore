@@ -11,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Models.BindingModels;
+using SimpleMusicStore.Web.Models.Dtos;
+using SimpleMusicStore.Web.Models.ViewModels;
 using SimpleMusicStore.Web.Services;
 
 namespace SimpleMusicStore.Web.Controllers
@@ -21,6 +23,8 @@ namespace SimpleMusicStore.Web.Controllers
         private readonly SignInManager<SimpleUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
+        private readonly SimpleUser _user;
+
 
         public ProfileController(
            UserManager<SimpleUser> userManager,
@@ -40,7 +44,7 @@ namespace SimpleMusicStore.Web.Controllers
         public IActionResult Register()
         {
             return View();
-            
+
         }
 
         [HttpPost]
@@ -59,7 +63,7 @@ namespace SimpleMusicStore.Web.Controllers
             if (result.Succeeded)
             {
 
-                await MakeFirstUserAdmin(user);
+                await AssignToRole(user);
 
 
                 await _signInManager.SignInAsync(user, isPersistent: false);
@@ -98,7 +102,7 @@ namespace SimpleMusicStore.Web.Controllers
             else
             {
                 ModelState.AddModelError(string.Empty, "Invalid login attempt.");
-                
+
             }
 
             // If we got this far, something failed, redisplay form
@@ -113,17 +117,76 @@ namespace SimpleMusicStore.Web.Controllers
             return RedirectToAction("Login");
         }
 
-        private async Task MakeFirstUserAdmin(SimpleUser user)
+
+        [Authorize]
+        public async Task<IActionResult> Wantlist ()
         {
-            bool x = await _roleManager.RoleExistsAsync("Admin");
-            if (!x)
+            var user = await _userManager.GetUserAsync(User);
+
+            var wantlist = user.Wantlist.Select(_mapper.Map<RecordViewModel>).ToList();
+
+            return View(wantlist);
+        }
+
+
+
+        [Authorize]
+        public async Task<IActionResult> FollowedArtists()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var followedArtists = user.FollowedArtists.Select(_mapper.Map<ArtistViewModel>).ToList();
+
+            return View(followedArtists);
+        }
+
+
+
+        [Authorize]
+        public async Task<IActionResult> FollowedLabels()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var followedLabels = user.FollowedLabels.Select(_mapper.Map<LabelViewModel>).ToList();
+
+            return View(followedLabels);
+        }
+
+
+
+        [Authorize]
+        public async Task<IActionResult> Comments()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var comments = user.Comments.Select(_mapper.Map<CommentDto>).ToList();
+
+            return View(comments);
+        }
+
+
+        private async Task AssignToRole(SimpleUser user)
+        {
+            bool adminExists = await _roleManager.RoleExistsAsync("Admin");
+            if (!adminExists)
             {
                 var role = new IdentityRole();
                 role.Name = "Admin";
                 await _roleManager.CreateAsync(role);
 
-                var result1 = await _userManager.AddToRoleAsync(user, "Admin");
+                var addAdmin = await _userManager.AddToRoleAsync(user, "Admin");
             }
+
+            bool userExists = await _roleManager.RoleExistsAsync("User");
+            if (!userExists)
+            {
+                var role = new IdentityRole();
+                role.Name = "User";
+                await _roleManager.CreateAsync(role);
+                
+            }
+            var result1 = await _userManager.AddToRoleAsync(user, "User");
+
         }
     }
 }

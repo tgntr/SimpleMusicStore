@@ -11,5 +11,11 @@ namespace SimpleMusicStore.Models
         [Required]
         public int OrderId { get; set; }
         public Order Order { get; set; }
+
+        //[Required]
+        //public int CartId { get; set; }
+        //public Cart Cart { get; set; }
+
+        //public int Quantity { get; set; } = 1;
     }
 }

@@ -18,16 +18,16 @@ namespace SimpleMusicStore.Web.Services
        
 
 
-        internal List<Label> All(string orderBy, string userId)
+        internal List<Label> All(string orderBy, string userId = null)
         {
             List<Label> labels;
             if (orderBy == "alphabetically")
             {
                 labels = All().OrderBy(a => a.Name).ToList();
             }
-            else if (orderBy == "popularity" || (orderBy == "recommended" && userId == ""))
+            else if (orderBy == "popularity" || (orderBy == "recommended" && userId == null))
             {
-                labels = All().OrderByDescending(l => l.Followers.Count() + l.Records.Sum(r=>r.Orders.Count())).ToList();
+                labels = All().OrderByDescending(l => l.Followers.Count() + l.Records.Sum(r=>(r.Orders.Count() * 2) + r.WantedBy.Count())).ToList();
             }
             else if (orderBy == "recommended")
             {

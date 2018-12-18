@@ -19,6 +19,8 @@ namespace SimpleMusicStore.Models
 
         public List<RecordOrder> Items { get; set; }
 
+        //public Cart Items {get;set;}
+
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
         [Required]

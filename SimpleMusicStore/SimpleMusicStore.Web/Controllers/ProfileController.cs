@@ -23,7 +23,6 @@ namespace SimpleMusicStore.Web.Controllers
         private readonly SignInManager<SimpleUser> _signInManager;
         private readonly RoleManager<IdentityRole> _roleManager;
         private readonly IMapper _mapper;
-        private readonly SimpleUser _user;
 
 
         public ProfileController(
@@ -43,6 +42,11 @@ namespace SimpleMusicStore.Web.Controllers
 
         public IActionResult Register()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return Redirect("/");
+            }
+
             return View();
 
         }
@@ -78,13 +82,20 @@ namespace SimpleMusicStore.Web.Controllers
 
         }
 
+
+
+
         public IActionResult Login()
         {
+            if (User.Identity.IsAuthenticated)
+            {
+                return Redirect("/");
+            }
+
             return View();
         }
 
-
-
+      
 
         [HttpPost]
         public async Task<IActionResult> Login(LoginBindingModel model)
@@ -165,6 +176,17 @@ namespace SimpleMusicStore.Web.Controllers
         }
 
 
+
+        [Authorize]
+        public async Task<IActionResult> Addresses ()
+        {
+            var user = await _userManager.GetUserAsync(User);
+
+            var addresses = user.Addresses.Select(_mapper.Map<AddressDto>).ToList();
+
+            return View(addresses);
+        }
+
         private async Task AssignToRole(SimpleUser user)
         {
             bool adminExists = await _roleManager.RoleExistsAsync("Admin");
@@ -186,7 +208,6 @@ namespace SimpleMusicStore.Web.Controllers
                 
             }
             var result1 = await _userManager.AddToRoleAsync(user, "User");
-
         }
     }
 }

@@ -12,5 +12,7 @@ namespace SimpleMusicStore.Web.Models.ViewModels
         public List<string> SelectedGenres { get; set; } = new List<string>();
 
         public List<string> AllGenres => Records.Select(r => r.Genre).Distinct().ToList();
+
+        public string Sort { get; set; }
     }
 }

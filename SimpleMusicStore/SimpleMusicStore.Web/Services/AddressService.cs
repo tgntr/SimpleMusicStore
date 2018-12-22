@@ -1,23 +1,59 @@
 ﻿using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
+using SimpleMusicStore.Web.Models.Dtos;
+using SimpleMusicStore.Web.Utilities;
+using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleMusicStore.Web.Services
 {
-    internal class AddressService
+    internal class AddressService :Service
     {
 
-        private SimpleDbContext _context;
-
         public AddressService(SimpleDbContext context)
+            :base(context)
         {
-            _context = context;
         }
 
-        internal void AddAddress(Address address)
+        internal async Task AddAddress(Address address)
         {
-            _context.Addresses.Add(address);
-            _context.SaveChanges();
+            await _context.Addresses.AddAsync(address);
+            await _context.SaveChangesAsync();
         }
+
+        internal async Task EditAddress(AddressDto address, int addressId)
+        {
+            var addressToEdit = GetAddress(addressId);
+
+            if (address == null)
+            {
+                return;
+            }
+
+            addressToEdit.Country = address.Country;
+            addressToEdit.City = address.City;
+            addressToEdit.Street = address.Street;
+            await _context.SaveChangesAsync();
+        }
+
+        internal async Task RemoveAddress (int addressId)
+        {
+            var address = GetAddress(addressId);
+
+            if (address == null)
+            {
+                return;
+            }
+
+            _context.Addresses.Remove(address);
+            await _context.SaveChangesAsync();
+        }
+
+        internal Address GetAddress(int addressId)
+        {
+            return _context.Addresses.FirstOrDefault(a => a.Id == addressId);
+        }
+        
     }
 }

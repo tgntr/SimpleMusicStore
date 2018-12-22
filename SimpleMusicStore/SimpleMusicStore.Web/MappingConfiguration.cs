@@ -68,11 +68,29 @@ namespace SimpleMusicStore
 
             CreateMap<AddressDto, Address>();
 
+            CreateMap<Address, AddressDto>();
+
             CreateMap<RegisterBindingModel, SimpleUser>()
                 .ForMember(u => u.UserName, map => map.MapFrom(rbm => rbm.Email));
 
 
-        
+
+            CreateMap<CartItemDto, RecordOrder>();
+
+
+            CreateMap<RecordOrder, CartRecordViewModel>()
+                .ForMember(cr => cr.Artist, map => map.MapFrom(ro => ro.Record.Artist))
+                .ForMember(cr => cr.ImageUrl, map => map.MapFrom(ro => ro.Record.ImageUrl))
+                .ForMember(cr => cr.Label, map => map.MapFrom(ro => ro.Record.Label))
+                .ForMember(cr => cr.Artist, map => map.MapFrom(ro => ro.Record.Artist))
+                .ForMember(cr => cr.Price, map => map.MapFrom(ro => ro.Record.Price))
+                .ForMember(cr => cr.Title, map => map.MapFrom(ro => ro.Record.Title));
+
+            CreateMap<CartOrderViewModel, Order>();
+
+            CreateMap<Order, CartOrderViewModel>();
+
+            CreateMap<Record, CartRecordViewModel>();
         }
     }
 }

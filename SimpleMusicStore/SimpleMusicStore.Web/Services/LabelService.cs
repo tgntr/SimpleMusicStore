@@ -5,6 +5,7 @@ using SimpleMusicStore.Web.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleMusicStore.Web.Services
 {
@@ -84,7 +85,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal void FollowLabel(int labelId, string userId)
+        internal async Task FollowLabel(int labelId, string userId)
         {
             if (!IsValidLabelId(labelId))
             {
@@ -97,13 +98,13 @@ namespace SimpleMusicStore.Web.Services
                 return;
             }
 
-            _context.LabelUsers.Add(labelUser);
-            _context.SaveChanges();
+            await _context.LabelUsers.AddAsync(labelUser);
+            await _context.SaveChangesAsync();
         }
 
 
 
-        internal void UnfollowLabel(int labelId, string userId)
+        internal async Task UnfollowLabel(int labelId, string userId)
         {
             if (!IsValidLabelId(labelId))
             {
@@ -118,7 +119,7 @@ namespace SimpleMusicStore.Web.Services
             }
 
             _context.LabelUsers.Remove(labelUser);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         internal List<Label> AllFollowed(string userId)

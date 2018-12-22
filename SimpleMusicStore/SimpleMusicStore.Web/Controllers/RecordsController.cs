@@ -31,14 +31,14 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public IActionResult All(string orderBy = "")
+        public IActionResult All()
         {
             var userId = "";
             if (User != null)
             {
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            var records = _recordService.All(orderBy, userId).Select(_mapper.Map<RecordViewModel>).ToList();
+            var records = _recordService.All(userId).Select(_mapper.Map<RecordViewModel>).ToList();
             var allRecordsViewModel = new AllRecordsViewModel { Records = records };
 
             return View(allRecordsViewModel);
@@ -48,14 +48,14 @@ namespace SimpleMusicStore.Web.Controllers
 
 
         [HttpPost]
-        public IActionResult All(AllRecordsViewModel model, string orderBy = "")
+        public IActionResult All(AllRecordsViewModel model)
         {
             var userId = "";
             if (User != null)
             {
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            var records = _recordService.All(orderBy, userId, model.SelectedGenres).Select(_mapper.Map<RecordViewModel>).ToList();
+            var records = _recordService.All(model.Sort, userId, model.SelectedGenres).Select(_mapper.Map<RecordViewModel>).ToList();
             model.Records = records;
 
             return View(model);
@@ -81,10 +81,10 @@ namespace SimpleMusicStore.Web.Controllers
 
 
         [Authorize]
-        public IActionResult AddToWantlist(int id)
+        public async Task<IActionResult> AddToWantlist(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _recordService.AddToWantlist(id, userId);
+            await _recordService.AddToWantlist(id, userId);
 
             return Redirect(_referrerUrl);
         }
@@ -92,10 +92,10 @@ namespace SimpleMusicStore.Web.Controllers
 
 
         [Authorize]
-        public IActionResult RemoveFromWantList(int id)
+        public async Task<IActionResult> RemoveFromWantList(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _recordService.RemoveFromWantlist(id, userId);
+            await _recordService.RemoveFromWantlist(id, userId);
 
             return Redirect(_referrerUrl);
         }

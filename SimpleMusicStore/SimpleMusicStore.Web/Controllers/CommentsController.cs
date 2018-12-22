@@ -31,49 +31,53 @@ namespace SimpleMusicStore.Web.Controllers
             _referrerUrl = Request.Headers["Referer"].ToString();
         }
         
+
+
         [HttpPost]
-        public IActionResult CommentRecord(RecordViewModel model)
+        public async Task<IActionResult> CommentRecord(RecordViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return Redirect(_referrerUrl);
             }
 
-            _commentService.AddComment<Record>(model.Id, model.Comment, _userId);
+            await _commentService.AddComment<Record>(model.Id, model.Comment, _userId);
 
             return Redirect(_referrerUrl);
         }
 
+
+
         [HttpPost]
-        public IActionResult CommentArtist(ArtistViewModel model)
+        public async Task<IActionResult> CommentArtist(ArtistViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return Redirect(_referrerUrl);
             }
 
-            _commentService.AddComment<Artist>(model.Id, model.Comment, _userId);
+            await _commentService.AddComment<Artist>(model.Id, model.Comment, _userId);
 
             return Redirect(_referrerUrl);
         }
 
         [HttpPost]
-        public IActionResult CommentLabel(LabelViewModel model)
+        public async Task<IActionResult> CommentLabel(LabelViewModel model)
         {
             if (!ModelState.IsValid)
             {
                 return Redirect(_referrerUrl);
             }
 
-            _commentService.AddComment<Label>(model.Id, model.Comment, _userId);
+            await _commentService.AddComment<Label>(model.Id, model.Comment, _userId);
 
             return Redirect(_referrerUrl);
         }
 
-        public IActionResult RemoveComment(int commentId)
+        public async Task<IActionResult> RemoveComment(int commentId)
         {
             var isAdmin = User.IsInRole("Admin");
-            _commentService.RemoveComment(commentId, _userId, isAdmin);
+            await _commentService.RemoveComment(commentId, _userId, isAdmin);
 
             return Redirect(_referrerUrl);
         }

@@ -58,20 +58,20 @@ namespace SimpleMusicStore.Web.Controllers
 
 
         [Authorize]
-        public IActionResult Follow(int id)
+        public async Task<IActionResult> Follow(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _artistService.FollowArtist(id, userId);
+            await _artistService.FollowArtist(id, userId);
 
             return Redirect(_referrerUrl);
         }
 
 
         [Authorize]
-        public IActionResult Unfollow(int id)
+        public async Task<IActionResult> Unfollow(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _artistService.UnfollowArtist(id, userId);
+            await _artistService.UnfollowArtist(id, userId);
         
             return Redirect(_referrerUrl);
         }

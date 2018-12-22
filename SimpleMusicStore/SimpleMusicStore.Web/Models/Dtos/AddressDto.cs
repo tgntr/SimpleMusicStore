@@ -21,5 +21,7 @@ namespace SimpleMusicStore.Web.Models.Dtos
         [StringLength(100, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
         [Display(Name = "Street")]
         public string Street { get; set; }
+
+        public int Id { get; set; }
     }
 }

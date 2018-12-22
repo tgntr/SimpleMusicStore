@@ -57,10 +57,10 @@ namespace SimpleMusicStore.Web.Controllers
 
 
         [Authorize]
-        public IActionResult FollowLabel(int id)
+        public async Task<IActionResult> FollowLabel(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _labelService.FollowLabel(id, userId);
+            await _labelService.FollowLabel(id, userId);
 
             return Redirect(_referrerUrl);
         }
@@ -68,22 +68,12 @@ namespace SimpleMusicStore.Web.Controllers
 
 
         [Authorize]
-        public IActionResult UnfollowLabel(int id)
+        public async Task<IActionResult> UnfollowLabel(int id)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            _labelService.UnfollowLabel(id, userId);
+            await _labelService.UnfollowLabel(id, userId);
 
             return Redirect(_referrerUrl);
-        }
-
-        [Authorize]
-        public IActionResult Followed()
-        {
-            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            var labels = _labelService.AllFollowed(userId).Select(_mapper.Map<LabelViewModel>).ToList();
-
-            return View(labels);
         }
     }
 }

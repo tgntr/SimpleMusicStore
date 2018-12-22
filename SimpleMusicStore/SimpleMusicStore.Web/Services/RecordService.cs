@@ -9,6 +9,7 @@ using SimpleMusicStore.Web.Utilities;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Threading.Tasks;
 
 namespace SimpleMusicStore.Web.Services
 {
@@ -32,7 +33,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal void AddRecord(DiscogsRecordDto discogsRecordDto, decimal price)
+        internal async Task AddRecord(DiscogsRecordDto discogsRecordDto, decimal price)
         {
             var record = CreateRecord(discogsRecordDto);
 
@@ -42,8 +43,8 @@ namespace SimpleMusicStore.Web.Services
             }
             record.Price = price;
 
-            _context.Records.Add(record);
-            _context.SaveChanges();
+            await _context.Records.AddAsync(record);
+            await _context.SaveChangesAsync();
         }
 
 
@@ -144,7 +145,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal void EditRecordPrice(int recordId, decimal price)
+        internal async Task EditRecordPrice(int recordId, decimal price)
         {
             var record = GetRecord(recordId);
             if (record.Price == price)
@@ -153,13 +154,13 @@ namespace SimpleMusicStore.Web.Services
             }
 
             record.Price = price;
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
 
 
 
-        internal void RemoveRecord(int recordId)
+        internal async Task RemoveRecord(int recordId)
         {
             var record = GetRecord(recordId);
 
@@ -169,7 +170,7 @@ namespace SimpleMusicStore.Web.Services
             }
 
             _context.Records.Remove(record);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
 
@@ -251,7 +252,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal void AddToWantlist(int recordId, string userId)
+        internal async Task AddToWantlist(int recordId, string userId)
         {
             if (!IsValidRecordId(recordId))
             {
@@ -264,11 +265,11 @@ namespace SimpleMusicStore.Web.Services
             {
                 return;
             }
-            _context.RecordUsers.Add(recordUser);
-            _context.SaveChanges();
+            await _context.RecordUsers.AddAsync(recordUser);
+            await _context.SaveChangesAsync();
         }
 
-        internal void RemoveFromWantlist(int recordId, string userId)
+        internal async Task RemoveFromWantlist(int recordId, string userId)
         {
             if (!IsValidRecordId(recordId))
             {
@@ -282,7 +283,7 @@ namespace SimpleMusicStore.Web.Services
                 return;
             }
             _context.RecordUsers.Remove(recordUser);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
 
         }
 

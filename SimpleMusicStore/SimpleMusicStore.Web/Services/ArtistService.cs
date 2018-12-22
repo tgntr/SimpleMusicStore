@@ -17,8 +17,20 @@ namespace SimpleMusicStore.Web.Services
         {
         }
 
+        //private async Task<List<Artist>> All()
+        //{
+        //    return await Task.Run(() => _context.Artists
+        //        .Include(a => a.Records)
+        //            .ThenInclude(r => r.Orders)
+        //                .ThenInclude(o => o.Order)
+        //        .Include(a => a.Followers)
+        //        .ToList());
+        //}
+
+
         private List<Artist> All()
         {
+
             return _context.Artists
                 .Include(a=>a.Records)
                     .ThenInclude(r=>r.Orders)
@@ -78,7 +90,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal void FollowArtist(int artistId, string userId)
+        internal async Task FollowArtist(int artistId, string userId)
         {
             if (!IsValidArtistId(artistId))
             {
@@ -92,11 +104,11 @@ namespace SimpleMusicStore.Web.Services
                 return;
             }
 
-            _context.ArtistUsers.Add(artistUser);
-            _context.SaveChanges();
+            await _context.ArtistUsers.AddAsync(artistUser);
+            await _context.SaveChangesAsync();
         }
 
-        internal void UnfollowArtist(int artistId, string userId)
+        internal async Task UnfollowArtist(int artistId, string userId)
         {
             if (!IsValidArtistId(artistId))
             {
@@ -111,7 +123,7 @@ namespace SimpleMusicStore.Web.Services
             }
 
             _context.ArtistUsers.Remove(artistUser);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
         internal List<Artist> AllFollowed(string userId)

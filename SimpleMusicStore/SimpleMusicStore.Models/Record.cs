@@ -38,9 +38,6 @@ namespace SimpleMusicStore.Models
         public int LabelId { get; set; }
         public Label Label { get; set; }
         
-        [Required]
-        [Range(1,100)]
-        public decimal Price { get; set; }
 
         public List<Comment> Comments { get; set; } = new List<Comment>();
 
@@ -49,5 +46,11 @@ namespace SimpleMusicStore.Models
         public List<RecordOrder> Orders { get; set; } = new List<RecordOrder>();
 
         public DateTime DateAdded { get; set; } = DateTime.UtcNow;
+
+        [Required]
+        [Range(1, 100)]
+        public decimal Price { get; set; }
+
+        //quantity
     }
 }

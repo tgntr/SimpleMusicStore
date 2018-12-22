@@ -22,7 +22,7 @@ namespace SimpleMusicStore.Web.Services
             _labelService = new LabelService(context);
         }
 
-        internal void AddComment<T>(int targetId, string content, string userId)
+        internal async Task AddComment<T>(int targetId, string content, string userId)
         {
             Comment comment = new Comment { UserId = userId, Content = content };
             if (typeof(T) == typeof(Record))
@@ -57,13 +57,13 @@ namespace SimpleMusicStore.Web.Services
                 return;
             }
 
-            _context.Comments.Add(comment);
-            _context.SaveChanges();
+            await _context.Comments.AddAsync(comment);
+            await _context.SaveChangesAsync();
         }
 
         
 
-        internal void RemoveComment(int commentId, string userId, bool isAdmin)
+        internal async Task RemoveComment(int commentId, string userId, bool isAdmin)
         {
 
             var comment = _context.Comments.FirstOrDefault();
@@ -74,7 +74,7 @@ namespace SimpleMusicStore.Web.Services
             }
 
             _context.Comments.Remove(comment);
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
 
 

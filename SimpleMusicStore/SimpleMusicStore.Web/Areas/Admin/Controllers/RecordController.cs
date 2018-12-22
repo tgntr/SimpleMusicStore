@@ -43,7 +43,7 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View();
+                return View(model);
             }
 
             var discogsId = DiscogsUtilities.GetDiscogsId(model.DiscogsUrl);
@@ -72,15 +72,20 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Preview(long discogsId, RecordAdminViewModel model)
+        public async Task<IActionResult> Preview(long discogsId, RecordAdminViewModel model)
         {
-            if (!DiscogsUtilities.IsValidDiscogsId(discogsId) || !ModelState.IsValid) 
+            if (!DiscogsUtilities.IsValidDiscogsId(discogsId)) 
             {
                 return RedirectToAction("Add");
             }
 
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
             var recordDto = DiscogsUtilities.Get<DiscogsRecordDto>(discogsId);
-            _recordService.AddRecord(recordDto, model.Price);
+            await _recordService.AddRecord(recordDto, model.Price);
 
             var recordId = _recordService.FindByDiscogsId(discogsId);
             return Redirect($"/view/records/{recordId}");
@@ -100,14 +105,19 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Edit(int id, RecordAdminViewModel model)
+        public async Task<IActionResult> Edit(int id, RecordAdminViewModel model)
         {
-            if (!_recordService.IsValidRecordId(id) || !ModelState.IsValid)
+            if (!_recordService.IsValidRecordId(id))
             {
                 return Redirect("/view/records");
             }
 
-            _recordService.EditRecordPrice(id, model.Price);
+            if (!ModelState.IsValid)
+            {
+                return View(model);
+            }
+
+            await _recordService.EditRecordPrice(id, model.Price);
             
             return Redirect($"/view/records/{id}");
         }
@@ -126,14 +136,14 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         }
 
         [HttpPost]
-        public IActionResult Remove(int id, bool isPostMethod = true)
+        public async Task<IActionResult> Remove(int id, bool isPostMethod = true)
         {
             if (!_recordService.IsValidRecordId(id))
             {
                 return Redirect("/view/records");
             }
 
-            _recordService.RemoveRecord(id);
+            await _recordService.RemoveRecord(id);
             
             return Redirect("/view/records");
         }

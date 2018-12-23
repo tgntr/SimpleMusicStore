@@ -135,9 +135,9 @@ namespace SimpleMusicStore.Web.Services
             return value == null ? null : JsonConvert.DeserializeObject<List<CartItemDto>>(value);
         }
 
-        internal Order GetOrder(int orderId)
+        internal async Task<Order> GetOrder(int orderId)
         {
-            return _context.Orders
+            return await _context.Orders
                 .Include(o => o.Items)
                     .ThenInclude(i => i.Record)
                         .ThenInclude(r=>r.Artist)
@@ -145,7 +145,7 @@ namespace SimpleMusicStore.Web.Services
                     .ThenInclude(i => i.Record)
                         .ThenInclude(r => r.Label)
                 .Include(o=>o.DeliveryAddress)
-                .FirstOrDefault(o => o.Id == orderId);
+                .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
         internal void EmptyCart()

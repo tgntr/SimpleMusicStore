@@ -35,9 +35,9 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public IActionResult Details(int orderId)
+        public async Task<IActionResult> Details(int orderId)
         {
-            var order = _orderService.GetOrder(orderId);
+            var order = await _orderService.GetOrder(orderId);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -132,16 +132,17 @@ namespace SimpleMusicStore.Web.Controllers
 
         private CartOrderViewModel GetCart()
         {
-            var items = _orderService.GetCart()
+            var items =  _orderService.GetCart()
                 .Select(c =>
                 {
-                    var cartRecordViewModel = _mapper.Map<CartRecordViewModel>(_recordService.GetRecord(c.RecordId));
+                    var record = _recordService.GetRecord(c.RecordId);
+                    var cartRecordViewModel = _mapper.Map<CartRecordViewModel>(record);
                     cartRecordViewModel.Quantity = c.Quantity;
-                    return cartRecordViewModel;
+                    return  cartRecordViewModel;
                 })
                 .ToList();
 
-            return new CartOrderViewModel { Items = items };
+            return new CartOrderViewModel { Items =  items };
         }
     }
 }

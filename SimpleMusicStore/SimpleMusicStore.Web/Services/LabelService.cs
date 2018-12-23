@@ -19,20 +19,20 @@ namespace SimpleMusicStore.Web.Services
        
 
 
-        internal List<Label> All(string orderBy, string userId = null)
+        internal async Task<List<Label>> All(string orderBy, string userId = null)
         {
-            List<Label> labels;
+            var labels = await All();
             if (orderBy == "alphabetically")
             {
-                labels = All().OrderBy(a => a.Name).ToList();
+                labels = labels.OrderBy(a => a.Name).ToList();
             }
             else if (orderBy == "popularity" || (orderBy == "recommended" && userId == null))
             {
-                labels = All().OrderByDescending(l => l.Followers.Count() + l.Records.Sum(r=>(r.Orders.Count() * 2) + r.WantedBy.Count())).ToList();
+                labels = labels.OrderByDescending(l => l.Followers.Count() + l.Records.Sum(r=>(r.Orders.Count() * 2) + r.WantedBy.Count())).ToList();
             }
             else if (orderBy == "recommended")
             {
-                labels = All().OrderByDescending(l=>
+                labels = labels.OrderByDescending(l=>
                 {
                     if (l.Followers.Any(f => f.UserId == userId))
                     {
@@ -46,7 +46,7 @@ namespace SimpleMusicStore.Web.Services
             }
             else
             {
-                labels = All().ToList();
+                labels = labels.ToList();
             }
 
             return labels;
@@ -54,40 +54,40 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        private List<Label> All()
+        private async Task<List<Label>> All()
         {
-            return _context.Labels
+            return await _context.Labels
                 .Include(l => l.Followers)
                 .Include(l => l.Records)
                     .ThenInclude(r => r.Orders)
                         .ThenInclude(o => o.Order)
-                .ToList();
+                .ToListAsync();
         }
 
 
 
-        internal Label GetLabel(int labelId)
+        internal async Task<Label> GetLabel(int labelId)
         {
-            return _context.Labels
+            return await _context.Labels
                 .Include(l=>l.Records)
                     .ThenInclude(r => r.Artist)
                 .Include(l=>l.Comments)
                     .ThenInclude(c=>c.User.UserName)
-                .FirstOrDefault(a => a.Id == labelId);
+                .FirstOrDefaultAsync(a => a.Id == labelId);
         }
 
 
 
-        internal bool IsValidLabelId(int labelId)
+        internal async Task<bool> IsValidLabelId(int labelId)
         {
-            return _context.Labels.Any(l => l.Id == labelId);
+            return await _context.Labels.AnyAsync(l => l.Id == labelId);
         }
 
 
 
         internal async Task FollowLabel(int labelId, string userId)
         {
-            if (!IsValidLabelId(labelId))
+            if (!await IsValidLabelId(labelId))
             {
                 return;
             }
@@ -106,7 +106,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal async Task UnfollowLabel(int labelId, string userId)
         {
-            if (!IsValidLabelId(labelId))
+            if (!await IsValidLabelId(labelId))
             {
                 return;
             }
@@ -120,11 +120,6 @@ namespace SimpleMusicStore.Web.Services
 
             _context.LabelUsers.Remove(labelUser);
             await _context.SaveChangesAsync();
-        }
-
-        internal List<Label> AllFollowed(string userId)
-        {
-            return All().Where(l => l.Followers.Any(f => f.UserId == userId)).ToList();
         }
     }
 }

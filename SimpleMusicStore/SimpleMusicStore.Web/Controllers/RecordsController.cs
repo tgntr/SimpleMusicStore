@@ -31,14 +31,14 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public IActionResult All()
+        public async Task<IActionResult> All()
         {
             var userId = "";
             if (User != null)
             {
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            var records = _recordService.All(userId).Select(_mapper.Map<RecordViewModel>).ToList();
+            var records = (await _recordService.All(userId)).Select(_mapper.Map<RecordViewModel>).ToList();
             var allRecordsViewModel = new AllRecordsViewModel { Records = records };
 
             return View(allRecordsViewModel);
@@ -48,14 +48,14 @@ namespace SimpleMusicStore.Web.Controllers
 
 
         [HttpPost]
-        public IActionResult All(AllRecordsViewModel model)
+        public async Task<IActionResult> All(AllRecordsViewModel model)
         {
             var userId = "";
             if (User != null)
             {
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            var records = _recordService.All(model.Sort, userId, model.SelectedGenres).Select(_mapper.Map<RecordViewModel>).ToList();
+            var records = (await _recordService.All(model.Sort, userId, model.SelectedGenres)).Select(_mapper.Map<RecordViewModel>).ToList();
             model.Records = records;
 
             return View(model);
@@ -64,9 +64,9 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var record = _recordService.GetRecord(id);
+            var record = await _recordService.GetRecordAsync(id);
 
             if (record is null)
             {

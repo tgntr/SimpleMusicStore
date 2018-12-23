@@ -1,4 +1,5 @@
-﻿using SimpleMusicStore.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Utilities;
 using System;
@@ -27,7 +28,7 @@ namespace SimpleMusicStore.Web.Services
             Comment comment = new Comment { UserId = userId, Content = content };
             if (typeof(T) == typeof(Record))
             {
-                if (!_recordService.IsValidRecordId(targetId))
+                if (!await _recordService.IsValidRecordId(targetId))
                 {
                     return;
                 }
@@ -36,7 +37,7 @@ namespace SimpleMusicStore.Web.Services
             }
             else if (typeof(T) == typeof(Artist))
             {
-                if (!_artistService.IsValidArtistId(targetId))
+                if (!await _artistService.IsValidArtistId(targetId))
                 { 
                     return;
                 }
@@ -45,7 +46,7 @@ namespace SimpleMusicStore.Web.Services
             }
             else if (typeof(T) == typeof(Label))
             {
-                if (!_labelService.IsValidLabelId(targetId))
+                if (!await _labelService.IsValidLabelId(targetId))
                 {
                     return;
                 }
@@ -66,7 +67,7 @@ namespace SimpleMusicStore.Web.Services
         internal async Task RemoveComment(int commentId, string userId, bool isAdmin)
         {
 
-            var comment = _context.Comments.FirstOrDefault();
+            var comment = await _context.Comments.FirstOrDefaultAsync();
 
             if (comment is null || (comment.UserId != userId && !isAdmin))
             {
@@ -79,6 +80,6 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        private Comment GetComment(int commentId) => _context.Comments.FirstOrDefault(c => c.Id == commentId);
+        private async Task<Comment> GetComment(int commentId) => await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId);
     }
 }

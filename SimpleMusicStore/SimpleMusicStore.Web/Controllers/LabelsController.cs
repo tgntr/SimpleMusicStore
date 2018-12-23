@@ -29,21 +29,22 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public IActionResult All(string orderBy = "")
+        public async Task<IActionResult> All(string orderBy = "")
         {
             var userId = "";
             if (User != null)
             {
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            List<LabelViewModel> labels = _labelService.All(orderBy, userId).Select(_mapper.Map<LabelViewModel>).ToList();
+
+            var labels = (await _labelService.All(orderBy, userId)).Select(_mapper.Map<LabelViewModel>).ToList();
 
             return View(labels);
         }
 
-        public IActionResult Details(int id)
+        public async Task<IActionResult> Details(int id)
         {
-            var label = _labelService.GetLabel(id);
+            var label = await _labelService.GetLabel(id);
 
             if (label is null)
             {

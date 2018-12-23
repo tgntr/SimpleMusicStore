@@ -35,7 +35,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal async Task AddRecord(DiscogsRecordDto discogsRecordDto, decimal price)
         {
-            var record = CreateRecord(discogsRecordDto);
+            var record = await CreateRecord(discogsRecordDto);
 
             if(record is null)
             {
@@ -50,9 +50,9 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        private Record CreateRecord(DiscogsRecordDto recordDto)
+        private async Task<Record> CreateRecord(DiscogsRecordDto recordDto)
         {
-            if (_context.Records.Any(r => r.DiscogsId == recordDto.Id))
+            if (await _context.Records.AnyAsync(r => r.DiscogsId == recordDto.Id))
             {
                 return null;
             }
@@ -61,18 +61,18 @@ namespace SimpleMusicStore.Web.Services
             var videos = recordDto.Videos.Select(_mapper.Map<Video>).ToList();
 
             var labelInfo = recordDto.Labels.First();
-            var label = _context.Labels.FirstOrDefault(l => l.DiscogsId == labelInfo.Id);
+            var label = await _context.Labels.FirstOrDefaultAsync(l => l.DiscogsId == labelInfo.Id);
             if (label is null)
             {
-                var labelDto = DiscogsUtilities.Get<DiscogsLabelDto>(labelInfo.Id);
+                var labelDto = DiscogsUtilities.GetAsync<DiscogsLabelDto>(labelInfo.Id);
                 label = _mapper.Map<Label>(labelDto);
             }
 
             var artistInfo = recordDto.Artists.First();
-            var artist = _context.Artists.FirstOrDefault(a => a.DiscogsId == artistInfo.Id);
+            var artist = await _context.Artists.FirstOrDefaultAsync(a => a.DiscogsId == artistInfo.Id);
             if (artist is null)
             {
-                var artistDto = DiscogsUtilities.Get<DiscogsArtistDto>(artistInfo.Id);
+                var artistDto = DiscogsUtilities.GetAsync<DiscogsArtistDto>(artistInfo.Id);
                 artist = _mapper.Map<Artist>(artistDto);
             }
 
@@ -107,9 +107,9 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal int FindByDiscogsId(long discogsRecordId)
+        internal async Task<int> FindByDiscogsId(long discogsRecordId)
         {
-            var record = _context.Records.FirstOrDefault(r => r.DiscogsId == discogsRecordId);
+            var record = await _context.Records.FirstOrDefaultAsync(r => r.DiscogsId == discogsRecordId);
 
             if (record is null)
             {
@@ -122,32 +122,42 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal bool IsValidRecordId(int recordId)
+        internal async Task<bool> IsValidRecordId(int recordId)
         {
-            return _context.Records.Any(r => r.Id == recordId);
+            return await _context.Records.AnyAsync(r => r.Id == recordId);
         }
 
 
 
 
-        internal Record GetRecord(int recordId)
+        internal async Task<Record> GetRecordAsync(int recordId)
         {
-            return _context.Records
+            return await _context.Records
                 .Include(r=>r.Artist)
                 .Include(r=>r.Label)
                 .Include(r=>r.Videos)
                 .Include(r=>r.Tracks)
                 .Include(r=>r.Comments)
                     .ThenInclude(c=>c.User.UserName)
+                .FirstOrDefaultAsync(r => r.Id == recordId);
+        }
+
+        internal Record GetRecord(int recordId)
+        {
+            return  _context.Records
+                .Include(r => r.Artist)
+                .Include(r => r.Label)
+                .Include(r => r.Videos)
+                .Include(r => r.Tracks)
+                .Include(r => r.Comments)
+                    .ThenInclude(c => c.User.UserName)
                 .FirstOrDefault(r => r.Id == recordId);
         }
 
 
-
-
         internal async Task EditRecordPrice(int recordId, decimal price)
         {
-            var record = GetRecord(recordId);
+            var record = await GetRecordAsync(recordId);
             if (record.Price == price)
             {
                 return;
@@ -162,7 +172,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal async Task RemoveRecord(int recordId)
         {
-            var record = GetRecord(recordId);
+            var record = await GetRecordAsync(recordId);
 
             if (record is null)
             {
@@ -176,25 +186,25 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal List<Record> All(string orderBy, string userId = null, List<string> genres = null)
+        internal async Task<List<Record>> All(string orderBy, string userId = null, List<string> genres = null)
         {
-            List<Record> records;
+            var records = await All();
 
             if (orderBy == "newest")
             {
-                records = All(genres).OrderByDescending(r => r.DateAdded).ToList();
+                records = records.OrderByDescending(r => r.DateAdded).ToList();
             }
             else if (orderBy == "alphabetically")
             {
-                records = All(genres).OrderBy(r => r.Title).ToList();
+                records = records.OrderBy(r => r.Title).ToList();
             }
             else if (orderBy == "popularity" || (orderBy == "recommended" && userId == null))
             {
-                records = All(genres).OrderByDescending(r => r.WantedBy.Count() + (r.Orders.Count() * 2)).ToList();
+                records = records.OrderByDescending(r => r.WantedBy.Count() + (r.Orders.Count() * 2)).ToList();
             }
             else if (orderBy == "recommended")
             {
-                records = All(genres).OrderByDescending(record =>
+                records = records.OrderByDescending(record =>
                 {
                     if (record.Orders.Any(o => o.Order.UserId == userId))
                     {
@@ -221,7 +231,7 @@ namespace SimpleMusicStore.Web.Services
             }
             else
             {
-                records = All(genres).ToList();
+                records = records.ToList();
             }
 
             return records;
@@ -230,9 +240,9 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        private List<Record> All(List<string> genres = null)
+        private async Task<List<Record>> All(List<string> genres = null)
         {
-            var records = _context.Records
+            var records = await _context.Records
                 .Include(r => r.Artist)
                     .ThenInclude(a => a.Followers)
                 .Include(r => r.Label)
@@ -240,7 +250,7 @@ namespace SimpleMusicStore.Web.Services
                 .Include(r => r.WantedBy)
                 .Include(r => r.Orders)
                     .ThenInclude(o => o.Order)
-                .ToList();
+                .ToListAsync();
 
             if (genres != null && genres.Count > 0)
             {
@@ -254,7 +264,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal async Task AddToWantlist(int recordId, string userId)
         {
-            if (!IsValidRecordId(recordId))
+            if (!await IsValidRecordId(recordId))
             {
                 return;
             }
@@ -271,7 +281,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal async Task RemoveFromWantlist(int recordId, string userId)
         {
-            if (!IsValidRecordId(recordId))
+            if (!await IsValidRecordId(recordId))
             {
                 return;
             }
@@ -285,11 +295,6 @@ namespace SimpleMusicStore.Web.Services
             _context.RecordUsers.Remove(recordUser);
             await _context.SaveChangesAsync();
 
-        }
-
-        internal List<Record> AllFollowed(string userId)
-        {
-            return All().Where(r => r.WantedBy.Any(f => f.UserId == userId)).ToList();
         }
 
 

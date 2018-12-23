@@ -53,9 +53,9 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public IActionResult Edit(int addressId)
+        public async Task<IActionResult> Edit(int addressId)
         {
-            var address = _addressService.GetAddress(addressId);
+            var address = await _addressService.GetAddress(addressId);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -89,7 +89,7 @@ namespace SimpleMusicStore.Web.Controllers
 
         public async Task<IActionResult> Remove(int addressId)
         {
-            var address = _addressService.GetAddress(addressId);
+            var address = await _addressService.GetAddress(addressId);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 

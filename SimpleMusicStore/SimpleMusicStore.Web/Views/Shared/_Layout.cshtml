@@ -26,11 +26,13 @@
                     <span class="icon-bar"></span>
                     <span class="icon-bar"></span>
                 </button>
-                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">SimpleMusicStore.Web</a>
+                <a asp-area="" asp-controller="Home" asp-action="Index" class="navbar-brand">SimpleMusicStore</a>
             </div>
             <div class="navbar-collapse collapse">
                 <ul class="nav navbar-nav">
-                    <li><a asp-area="" asp-controller="Home" asp-action="Index">Home</a></li>
+                    <li><a asp-area="" asp-controller="Records" asp-action="All">Records</a></li>
+                    <li><a asp-area="" asp-controller="Artists" asp-action="All">Artists</a></li>
+                    <li><a asp-area="" asp-controller="Labels" asp-action="All">Labels</a></li>
                 </ul>
                 <partial name="_LoginPartial" />
             </div>
@@ -42,7 +44,7 @@
         @RenderBody()
         <hr />
         <footer>
-            <p>&copy; 2018 - SimpleMusicStore.Web</p>
+            <p>&copy; 2018 - SimpleMusicStore</p>
         </footer>
     </div>
 

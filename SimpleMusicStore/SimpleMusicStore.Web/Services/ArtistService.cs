@@ -28,31 +28,31 @@ namespace SimpleMusicStore.Web.Services
         //}
 
 
-        private List<Artist> All()
+        private async Task<List<Artist>> All()
         {
-
-            return _context.Artists
-                .Include(a=>a.Records)
-                    .ThenInclude(r=>r.Orders)
-                        .ThenInclude(o=>o.Order)
-                .Include(a=>a.Followers)
-                .ToList();
+            var artists = await _context.Artists
+                .Include(a => a.Records)
+                    .ThenInclude(r => r.Orders)
+                        .ThenInclude(o => o.Order)
+                .Include(a => a.Followers)
+                .ToListAsync();
+            return artists;
         }
 
-        internal List<Artist> All(string orderBy, string userId = null)
+        internal async Task<List<Artist>> All(string orderBy, string userId = null)
         {
-            List<Artist> artists;
+            var artists = await All();
             if (orderBy == "alphabetically")
             {
-                artists = All().OrderBy(a => a.Name).ToList();
+                artists = artists.OrderBy(a => a.Name).ToList();
             }
             else if (orderBy == "popularity" || (orderBy == "recommended" && userId == null))
             {
-                artists = All().OrderByDescending(a => a.Followers.Count() + a.Records.Sum(r => (r.Orders.Count() * 2) + r.WantedBy.Count())).ToList();
+                artists = artists.OrderByDescending(a => a.Followers.Count() + a.Records.Sum(r => (r.Orders.Count() * 2) + r.WantedBy.Count())).ToList();
             }
             else if (orderBy == "recommended")
             {
-                artists = All().OrderByDescending(a =>
+                artists = artists.OrderByDescending(a =>
                 {
                     if (a.Followers.Any(f => f.UserId == userId))
                     {
@@ -66,33 +66,33 @@ namespace SimpleMusicStore.Web.Services
             }
             else
             {
-                artists = All().ToList();
+                artists = artists.ToList();
             }
 
             return artists;
         }
 
-        internal Artist GetArtist(int artistId)
+        internal async Task<Artist> GetArtist(int artistId)
         {
-            return _context.Artists
+            return await _context.Artists
                 .Include(a => a.Records)
                     .ThenInclude(r=>r.Label)
                 .Include(a => a.Followers)
                 .Include(a => a.Comments)
                     .ThenInclude(c=>c.User.UserName)
-                .FirstOrDefault(a => a.Id == artistId);
+                .FirstOrDefaultAsync(a => a.Id == artistId);
         }
 
-        internal bool IsValidArtistId(int artistId)
+        internal async Task<bool> IsValidArtistId(int artistId)
         {
-            return _context.Artists.Any(l => l.Id == artistId);
+            return await _context.Artists.AnyAsync(l => l.Id == artistId);
         }
 
 
 
         internal async Task FollowArtist(int artistId, string userId)
         {
-            if (!IsValidArtistId(artistId))
+            if (!await IsValidArtistId(artistId))
             {
                 return;
             }
@@ -110,7 +110,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal async Task UnfollowArtist(int artistId, string userId)
         {
-            if (!IsValidArtistId(artistId))
+            if (!await IsValidArtistId(artistId))
             {
                 return;
             }
@@ -125,10 +125,6 @@ namespace SimpleMusicStore.Web.Services
             _context.ArtistUsers.Remove(artistUser);
             await _context.SaveChangesAsync();
         }
-
-        internal List<Artist> AllFollowed(string userId)
-        {
-            return All().Where(a => a.Followers.Any(f => f.UserId == userId)).ToList();
-        }
+        
     }
 }

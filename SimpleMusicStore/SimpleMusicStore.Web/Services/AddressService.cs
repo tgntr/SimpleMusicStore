@@ -1,4 +1,5 @@
-﻿using SimpleMusicStore.Data;
+﻿using Microsoft.EntityFrameworkCore;
+using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Models.Dtos;
 using SimpleMusicStore.Web.Utilities;
@@ -16,15 +17,19 @@ namespace SimpleMusicStore.Web.Services
         {
         }
 
+
+
         internal async Task AddAddress(Address address)
         {
             await _context.Addresses.AddAsync(address);
             await _context.SaveChangesAsync();
         }
 
+
+
         internal async Task EditAddress(AddressDto address, int addressId)
         {
-            var addressToEdit = GetAddress(addressId);
+            var addressToEdit = await GetAddress(addressId);
 
             if (address == null)
             {
@@ -37,9 +42,11 @@ namespace SimpleMusicStore.Web.Services
             await _context.SaveChangesAsync();
         }
 
+
+
         internal async Task RemoveAddress (int addressId)
         {
-            var address = GetAddress(addressId);
+            var address =  await GetAddress(addressId);
 
             if (address == null)
             {
@@ -50,9 +57,10 @@ namespace SimpleMusicStore.Web.Services
             await _context.SaveChangesAsync();
         }
 
-        internal Address GetAddress(int addressId)
+        internal async Task<Address> GetAddress(int addressId)
         {
-            return _context.Addresses.FirstOrDefault(a => a.Id == addressId);
+            var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == addressId);
+            return address;
         }
         
     }

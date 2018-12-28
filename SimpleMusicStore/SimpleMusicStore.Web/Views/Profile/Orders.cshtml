@@ -1,0 +1,42 @@
+﻿@model List<SimpleMusicStore.Web.Models.ViewModels.OrderViewModel>
+@{
+    ViewData["Title"] = "My Orders";
+}
+
+<h2>My Orders</h2>
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <col width="40" />
+            <col width="40" />
+            <col width="40" />
+            <col width="40" />
+            <th scope="col">Order No</th>
+            <th scope="col">Date ordered</th>
+            <th scope="col">Total price</th>
+            <th scope="col">Details</th>
+
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var order in Model.OrderByDescending(o=>o.OrderDate))
+        {
+            <tr>
+                <td>
+                    @order.Id
+                </td>
+                <td>
+                    @order.OrderDateFormat
+                </td>
+                <td>
+                    $@order.TotalPrice
+                </td>
+                <td>
+                    <a asp-controller="Orders" asp-action="Details" asp-route-orderId="@order.Id">Details</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+

@@ -18,69 +18,66 @@ namespace SimpleMusicStore.Web.Controllers
     {
         private CommentService _commentService;
         
-        private string _referrerUrl;
-
-        private string _userId;
+        
 
         public CommentsController(SimpleDbContext context)
         {
             _commentService = new CommentService(context);
-
-            _userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-
-            _referrerUrl = Request.Headers["Referer"].ToString();
+            
+            
         }
         
 
 
         [HttpPost]
-        public async Task<IActionResult> CommentRecord(RecordViewModel model)
+        public async Task<IActionResult> CommentRecord(int recordId, RecordViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return Redirect(_referrerUrl);
+                return Redirect($"/records/details?recordId={recordId}");
             }
+            
+            await _commentService.AddComment<Record>(recordId, model.Comment, GetUserId);
 
-            await _commentService.AddComment<Record>(model.Id, model.Comment, _userId);
-
-            return Redirect(_referrerUrl);
+            return Redirect($"/records/details?recordId={recordId}");
         }
 
 
 
         [HttpPost]
-        public async Task<IActionResult> CommentArtist(ArtistViewModel model)
+        public async Task<IActionResult> CommentArtist(int artistId, ArtistViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return Redirect(_referrerUrl);
+                return Redirect($"/artists/details?artistId={artistId}");
             }
 
-            await _commentService.AddComment<Artist>(model.Id, model.Comment, _userId);
+            await _commentService.AddComment<Artist>(model.Id, model.Comment, GetUserId);
 
-            return Redirect(_referrerUrl);
+            return Redirect($"/artists/details?artistId={artistId}");
         }
 
         [HttpPost]
-        public async Task<IActionResult> CommentLabel(LabelViewModel model)
+        public async Task<IActionResult> CommentLabel(int labelId, LabelViewModel model)
         {
             if (!ModelState.IsValid)
             {
-                return Redirect(_referrerUrl);
+                return Redirect($"/labels/details?labeId={labelId}");
             }
+            
+            await _commentService.AddComment<Label>(model.Id, model.Comment, GetUserId);
 
-            await _commentService.AddComment<Label>(model.Id, model.Comment, _userId);
-
-            return Redirect(_referrerUrl);
+            return Redirect($"/labels/details?labeId={labelId}");
         }
 
         public async Task<IActionResult> RemoveComment(int commentId)
         {
             var isAdmin = User.IsInRole("Admin");
-            await _commentService.RemoveComment(commentId, _userId, isAdmin);
+            await _commentService.RemoveComment(commentId, GetUserId, isAdmin);
 
-            return Redirect(_referrerUrl);
+            return Redirect("/");
         }
-        
+
+        private string GetUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

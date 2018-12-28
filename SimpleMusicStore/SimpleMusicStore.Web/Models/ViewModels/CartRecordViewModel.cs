@@ -13,8 +13,7 @@ namespace SimpleMusicStore.Web.Models.ViewModels
         public int Id { get; set; }
 
         public string Title { get; set; }
-
-        public string ImageUrl { get; set; }
+        
         
         public ArtistDto Artist { get; set; }
 

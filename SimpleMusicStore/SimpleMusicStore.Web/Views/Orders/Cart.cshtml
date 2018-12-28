@@ -1,0 +1,51 @@
+﻿@model SimpleMusicStore.Web.Models.ViewModels.CartOrderViewModel
+@{
+    ViewData["Title"] = "My Cart";
+
+}
+<br />
+<h2>My Cart</h2>
+<hr />
+<a asp-controller="Records" asp-action="All"><button type="submit" class="btn btn-group btn-default"><span class="glyphicon glyphicon-chevron-left"></span> Back to Store</button></a>
+<br />
+
+<br />
+<table class="table">
+    <thead>
+        <tr>
+            <col width="200" />
+            <col width="40" />
+            <col width="40" />
+            <col width="40" />
+            <th scope="col">Record</th>
+            <th scope="col">Price</th>
+            <th scope="col">Quantity</th>
+            <th scope="col">Remove</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Items)
+        {
+            <tr>
+                <td>
+                    <a asp-controller="Artists" asp-action="Details" asp-route-artistId="@item.Artist.Id">@item.Artist.Name</a> - <a asp-controller="Records" asp-action="Details" asp-route-recordId="@item.Id">@item.Title</a> [<a asp-controller="Labels" asp-action="Details" asp-route-labelId="@item.Label.Id">@item.Label.Name</a>]
+                </td>
+                <td>$@item.Price</td>
+                <td>
+                    <a asp-controller="Orders" asp-action="DecreaseQuantity" asp-route-recordId="@item.Id"><span class="glyphicon glyphicon-minus-sign"></span></a>
+                    @item.Quantity
+                    <a asp-controller="Orders" asp-action="AddToCart" asp-route-recordId="@item.Id"><span class="glyphicon glyphicon-plus-sign"></span></a>
+                </td>
+                <td>
+                    <a asp-controller="Orders" asp-action="RemoveFromCart" asp-route-recordId="@item.Id"><span class="glyphicon glyphicon-remove"></span></a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+<hr />
+<h3>
+    <strong>Total:</strong> $@Model.TotalPrice()
+    <a asp-area="" asp-controller="Orders" asp-action="Preview" asp-route-sessionId="@Model.SessionId"><button type="submit" class="btn btn-group btn-default"><span class="glyphicon glyphicon-check"></span> Checkout</button></a>
+</h3>
+

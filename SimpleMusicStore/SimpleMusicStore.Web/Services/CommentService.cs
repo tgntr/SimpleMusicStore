@@ -28,7 +28,7 @@ namespace SimpleMusicStore.Web.Services
             Comment comment = new Comment { UserId = userId, Content = content };
             if (typeof(T) == typeof(Record))
             {
-                if (!await _recordService.IsValidRecordId(targetId))
+                if (!await _recordService.IsValidRecordIdAsync(targetId))
                 {
                     return;
                 }

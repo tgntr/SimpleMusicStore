@@ -91,12 +91,12 @@ namespace SimpleMusicStore.Web.Services
             {
                 return;
             }
-            var labelUser = new LabelUser { LabelId = labelId, UserId = userId };
-
-            if (_context.LabelUsers.Contains(labelUser))
+            if (await _context.LabelUsers.AnyAsync(lu => lu.LabelId == labelId && lu.UserId == userId))
             {
                 return;
             }
+
+            var labelUser = new LabelUser { LabelId = labelId, UserId = userId };
 
             await _context.LabelUsers.AddAsync(labelUser);
             await _context.SaveChangesAsync();
@@ -111,9 +111,9 @@ namespace SimpleMusicStore.Web.Services
                 return;
             }
 
-            var labelUser = new LabelUser { LabelId = labelId, UserId = userId };
+            var labelUser = await _context.LabelUsers.FirstOrDefaultAsync(lu => lu.LabelId == labelId && lu.UserId == userId);
 
-            if (!_context.LabelUsers.Contains(labelUser))
+            if (labelUser == null)
             {
                 return;
             }

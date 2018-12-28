@@ -41,7 +41,7 @@ namespace SimpleMusicStore.Web.Areas.Admin.Utilities
             return discogsId;
         }
 
-        private static long GetDiscogsId(string discogsUrl)
+        internal static long GetDiscogsId(string discogsUrl)
         {
             var parameters = discogsUrl.ToLower().Split("/");
             var discogsId = long.Parse(string.Join("", parameters.Last().Where(char.IsNumber).ToArray()));

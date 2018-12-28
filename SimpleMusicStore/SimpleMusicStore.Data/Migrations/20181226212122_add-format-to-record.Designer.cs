@@ -3,15 +3,17 @@ using System;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 using SimpleMusicStore.Data;
 
 namespace SimpleMusicStore.Data.Migrations
 {
     [DbContext(typeof(SimpleDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20181226212122_add-format-to-record")]
+    partial class addformattorecord
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -136,16 +138,13 @@ namespace SimpleMusicStore.Data.Migrations
                         .HasAnnotation("SqlServer:ValueGenerationStrategy", SqlServerValueGenerationStrategy.IdentityColumn);
 
                     b.Property<string>("City")
-                        .IsRequired()
-                        .HasMaxLength(20);
+                        .IsRequired();
 
                     b.Property<string>("Country")
-                        .IsRequired()
-                        .HasMaxLength(20);
+                        .IsRequired();
 
                     b.Property<string>("Street")
-                        .IsRequired()
-                        .HasMaxLength(50);
+                        .IsRequired();
 
                     b.Property<string>("UserId")
                         .IsRequired();
@@ -440,7 +439,7 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<string>", b =>
@@ -448,7 +447,7 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.SimpleUser")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<string>", b =>
@@ -456,7 +455,7 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.SimpleUser")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<string>", b =>
@@ -464,12 +463,12 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole")
                         .WithMany()
                         .HasForeignKey("RoleId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleMusicStore.Models.SimpleUser")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<string>", b =>
@@ -477,7 +476,7 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.SimpleUser")
                         .WithMany()
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.Address", b =>
@@ -485,7 +484,7 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.SimpleUser", "User")
                         .WithMany("Addresses")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.ArtistUser", b =>
@@ -493,35 +492,32 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.Artist", "Artist")
                         .WithMany("Followers")
                         .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleMusicStore.Models.SimpleUser", "User")
                         .WithMany("FollowedArtists")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.Comment", b =>
                 {
                     b.HasOne("SimpleMusicStore.Models.Artist", "Artist")
                         .WithMany("Comments")
-                        .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("ArtistId");
 
                     b.HasOne("SimpleMusicStore.Models.Label", "Label")
                         .WithMany("Comments")
-                        .HasForeignKey("LabelId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("LabelId");
 
                     b.HasOne("SimpleMusicStore.Models.Record", "Record")
                         .WithMany("Comments")
-                        .HasForeignKey("RecordId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .HasForeignKey("RecordId");
 
                     b.HasOne("SimpleMusicStore.Models.SimpleUser", "User")
                         .WithMany("Comments")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.LabelUser", b =>
@@ -529,12 +525,12 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.Label", "Label")
                         .WithMany("Followers")
                         .HasForeignKey("LabelId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleMusicStore.Models.SimpleUser", "User")
                         .WithMany("FollowedLabels")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.Order", b =>
@@ -542,7 +538,7 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.Address", "DeliveryAddress")
                         .WithMany("Orders")
                         .HasForeignKey("DeliveryAddressId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleMusicStore.Models.SimpleUser", "User")
                         .WithMany("Orders")
@@ -555,12 +551,12 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.Artist", "Artist")
                         .WithMany("Records")
                         .HasForeignKey("ArtistId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleMusicStore.Models.Label", "Label")
                         .WithMany("Records")
                         .HasForeignKey("LabelId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.RecordOrder", b =>
@@ -568,12 +564,12 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.Order", "Order")
                         .WithMany("Items")
                         .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleMusicStore.Models.Record", "Record")
                         .WithMany("Orders")
                         .HasForeignKey("RecordId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.RecordUser", b =>
@@ -581,12 +577,12 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.Record", "Record")
                         .WithMany("WantedBy")
                         .HasForeignKey("RecordId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
 
                     b.HasOne("SimpleMusicStore.Models.SimpleUser", "User")
                         .WithMany("Wantlist")
                         .HasForeignKey("UserId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.Track", b =>
@@ -594,7 +590,7 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.Record", "Record")
                         .WithMany("Tracks")
                         .HasForeignKey("RecordId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 
             modelBuilder.Entity("SimpleMusicStore.Models.Video", b =>
@@ -602,7 +598,7 @@ namespace SimpleMusicStore.Data.Migrations
                     b.HasOne("SimpleMusicStore.Models.Record", "Record")
                         .WithMany("Videos")
                         .HasForeignKey("RecordId")
-                        .OnDelete(DeleteBehavior.Restrict);
+                        .OnDelete(DeleteBehavior.Cascade);
                 });
 #pragma warning restore 612, 618
         }

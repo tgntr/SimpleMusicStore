@@ -1,12 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using SimpleMusicStore.Data;
 using SimpleMusicStore.Models;
@@ -125,14 +127,17 @@ namespace SimpleMusicStore.Web.Controllers
         {
             await _signInManager.SignOutAsync();
 
-            return RedirectToAction("Login");
+            return Redirect("/");
         }
 
 
         [Authorize]
         public async Task<IActionResult> Wantlist ()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.Users
+                .Include(u => u.Wantlist)
+                   .ThenInclude(w => w.Record)
+                .SingleAsync(u => u.Id == GetUserId);
 
             var wantlist = user.Wantlist.Select(_mapper.Map<RecordViewModel>).ToList();
 
@@ -144,7 +149,10 @@ namespace SimpleMusicStore.Web.Controllers
         [Authorize]
         public async Task<IActionResult> FollowedArtists()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.Users
+                .Include(u => u.FollowedArtists)
+                   .ThenInclude(al => al.Artist)
+                .SingleAsync(u => u.Id == GetUserId);
 
             var followedArtists = user.FollowedArtists.Select(_mapper.Map<ArtistViewModel>).ToList();
 
@@ -156,7 +164,10 @@ namespace SimpleMusicStore.Web.Controllers
         [Authorize]
         public async Task<IActionResult> FollowedLabels()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.Users
+                .Include(u => u.FollowedLabels)
+                    .ThenInclude(fl=>fl.Label)
+                .SingleAsync(u => u.Id == GetUserId);
 
             var followedLabels = user.FollowedLabels.Select(_mapper.Map<LabelViewModel>).ToList();
 
@@ -168,7 +179,9 @@ namespace SimpleMusicStore.Web.Controllers
         [Authorize]
         public async Task<IActionResult> Comments()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.Users
+                .Include(u => u.Comments)
+                .SingleAsync(u => u.Id == GetUserId);
 
             var comments = user.Comments.Select(_mapper.Map<CommentDto>).ToList();
 
@@ -178,15 +191,31 @@ namespace SimpleMusicStore.Web.Controllers
 
 
         [Authorize]
-        public async Task<IActionResult> Addresses ()
+        public async Task<IActionResult> Addresses()
         {
-            var user = await _userManager.GetUserAsync(User);
+            var user = await _userManager.Users
+                .Include(u => u.Addresses)
+                .SingleAsync(u => u.Id == GetUserId);
 
             var addresses = user.Addresses.Select(_mapper.Map<AddressDto>).ToList();
 
             return View(addresses);
         }
 
+
+        [Authorize]
+        public async Task<IActionResult> Orders()
+        {
+            var user = await _userManager.Users
+                .Include(u => u.Orders)
+                .SingleAsync(u => u.Id == GetUserId);
+
+            var addresses = user.Orders.Select(_mapper.Map<OrderViewModel>).ToList();
+
+            return View(addresses);
+
+
+        }
         private async Task AssignToRole(SimpleUser user)
         {
             bool adminExists = await _roleManager.RoleExistsAsync("Admin");
@@ -205,9 +234,11 @@ namespace SimpleMusicStore.Web.Controllers
                 var role = new IdentityRole();
                 role.Name = "User";
                 await _roleManager.CreateAsync(role);
-                
+
             }
             var result1 = await _userManager.AddToRoleAsync(user, "User");
         }
+
+        private string GetUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);
     }
 }

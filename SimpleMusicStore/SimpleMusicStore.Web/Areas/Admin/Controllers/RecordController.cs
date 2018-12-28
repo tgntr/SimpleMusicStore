@@ -1,17 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿
 using System.Threading.Tasks;
 using AutoMapper;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SimpleMusicStore.Data;
-using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Areas.Admin.Models;
 using SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos.RecordDtos;
 using SimpleMusicStore.Web.Services;
 using SimpleMusicStore.Web.Areas.Admin.Utilities;
-using SimpleMusicStore.Web.Models.ViewModels;
 using Microsoft.AspNetCore.Authorization;
 
 namespace SimpleMusicStore.Web.Areas.Admin.Controllers
@@ -31,12 +26,14 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
             _mapper = mapper;
         }
 
-        public async Task<IActionResult> Add()
+
+
+        public IActionResult Add()
         {
-            var discogsRecordDto = await DiscogsUtilities.GetAsync<DiscogsRecordDto>(3771290);
-            var viewModel = _mapper.Map<RecordAdminViewModel>(discogsRecordDto);
             return View();
         }
+
+
 
         [HttpPost]
         public async Task<IActionResult> Add(AddRecordBindingModel model)
@@ -46,11 +43,20 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
                 return View(model);
             }
 
-            var discogsId = await DiscogsUtilities.GetDiscogsIdAsync(model.DiscogsUrl);
-            return Redirect($"/admin/record/preview/{discogsId}");
+            var currentDiscogsId = await DiscogsUtilities.GetDiscogsIdAsync(model.DiscogsUrl);
+
+            var recordId = await _recordService.FindByDiscogsId(currentDiscogsId);
+            if (recordId >= 0)
+            {
+                return Redirect($"/records/details?recordId={recordId}");
+            }
+
+            return RedirectToAction("Preview", "Record", new { discogsId = currentDiscogsId, Area = "Admin" });
         }
 
-        
+
+
+
         public async Task<IActionResult> Preview(long discogsId)
         {
             if (!await DiscogsUtilities.IsValidDiscogsIdAsync(discogsId))
@@ -58,97 +64,90 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
                 return RedirectToAction("Add");
             }
 
-            var recordId = await _recordService.FindByDiscogsId(discogsId);
-            if (recordId >= 0)
-            {
-                return Redirect($"/view/records/{recordId}");
-            }
-
             var discogsRecordDto = await DiscogsUtilities.GetAsync<DiscogsRecordDto>(discogsId);
 
-            var previewModel = _mapper.Map<RecordAdminViewModel>(discogsRecordDto);
+            var model = _mapper.Map<RecordAdminViewModel>(discogsRecordDto);
 
-            return View(previewModel);
+            return View(model);
         }
+
+
+
 
         [HttpPost]
         public async Task<IActionResult> Preview(long discogsId, RecordAdminViewModel model)
         {
-            if (!await DiscogsUtilities.IsValidDiscogsIdAsync(discogsId)) 
+            if (!await DiscogsUtilities.IsValidDiscogsIdAsync(discogsId))
             {
                 return RedirectToAction("Add");
             }
 
             if (!ModelState.IsValid)
             {
+                var discogsRecordDto = await DiscogsUtilities.GetAsync<DiscogsRecordDto>(discogsId);
+
+                model = _mapper.Map<RecordAdminViewModel>(discogsRecordDto);
+
                 return View(model);
             }
-
+            
             var recordDto = await DiscogsUtilities.GetAsync<DiscogsRecordDto>(discogsId);
             await _recordService.AddRecord(recordDto, model.Price);
 
             var recordId = await _recordService.FindByDiscogsId(discogsId);
-            return Redirect($"/view/records/{recordId}");
+            return Redirect($"/records/details?recordId={recordId}");
         }
 
-        public async Task<IActionResult> Edit(int id)
+
+
+        public async Task<IActionResult> Edit(int recordId)
         {
-            if (!await _recordService.IsValidRecordId(id))
+            if (!await _recordService.IsValidRecordIdAsync(recordId))
             {
-                return Redirect("/view/records");
+                return Redirect("/records/all");
             }
 
-            var record = await _recordService.GetRecordAsync(id);
-            var recordViewModel = _mapper.Map<RecordAdminViewModel>(record);
+            var record = await _recordService.GetRecordAsync(recordId);
+            var model = _mapper.Map<RecordAdminViewModel>(record);
 
-            return View(recordViewModel);
+            return View(model);
         }
 
+
+
         [HttpPost]
-        public async Task<IActionResult> Edit(int id, RecordAdminViewModel model)
+        public async Task<IActionResult> Edit(int recordId, RecordAdminViewModel model)
         {
-            if (!await _recordService.IsValidRecordId(id))
+            if (!await _recordService.IsValidRecordIdAsync(recordId))
             {
-                return Redirect("/view/records");
+                return Redirect("/records/all");
             }
 
             if (!ModelState.IsValid)
             {
+                var record = await _recordService.GetRecordAsync(recordId);
+                model = _mapper.Map<RecordAdminViewModel>(record);
+
                 return View(model);
             }
 
-            await _recordService.EditRecordPrice(id, model.Price);
+            await _recordService.EditRecordPrice(recordId, model.Price);
             
-            return Redirect($"/view/records/{id}");
+            return Redirect($"/records/details?recordId={recordId}");
         }
 
-        public async Task<IActionResult> Remove(int id)
+
+
+        public async Task<IActionResult> Remove(int recordId)
         {
-            if (!await _recordService.IsValidRecordId(id))
+            if (!await _recordService.IsValidRecordIdAsync(recordId))
             {
-                return Redirect("/view/records");
+                return Redirect("/records/all");
             }
 
-            var record = await _recordService.GetRecordAsync(id);
-            var recordViewModel = _mapper.Map<RecordAdminViewModel>(record);
+            await _recordService.RemoveRecord(recordId);
 
-            return View(recordViewModel);
+            return Redirect("/");
         }
-
-        [HttpPost]
-        public async Task<IActionResult> Remove(int id, bool isPostMethod = true)
-        {
-            if (!await _recordService.IsValidRecordId(id))
-            {
-                return Redirect("/view/records");
-            }
-
-            await _recordService.RemoveRecord(id);
-            
-            return Redirect("/view/records");
-        }
-
-
-
     }
 }

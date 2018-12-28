@@ -62,6 +62,11 @@ namespace SimpleMusicStore.Web.Services
             var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == addressId);
             return address;
         }
+
+        internal async Task<List<Address>> AllUserAddresses(string userId)
+        {
+            return await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
+        }
         
     }
 }

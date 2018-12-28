@@ -15,7 +15,6 @@ namespace SimpleMusicStore.Web.Controllers
     public class LabelsController : Controller
     {
         private readonly LabelService _labelService;
-        private readonly string _referrerUrl;
         private readonly IMapper _mapper;
 
 
@@ -24,7 +23,6 @@ namespace SimpleMusicStore.Web.Controllers
         {
             _labelService = new LabelService(context);
             _mapper = mapper;
-            _referrerUrl = Request.Headers["Referer"].ToString();
         }
 
 
@@ -37,9 +35,9 @@ namespace SimpleMusicStore.Web.Controllers
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
 
-            var labels = (await _labelService.All(orderBy, userId)).Select(_mapper.Map<LabelViewModel>).ToList();
+            var model = (await _labelService.All(orderBy, userId)).Select(_mapper.Map<LabelViewModel>).ToList();
 
-            return View(labels);
+            return View(model);
         }
 
         public async Task<IActionResult> Details(int id)
@@ -51,30 +49,39 @@ namespace SimpleMusicStore.Web.Controllers
                 return RedirectToAction("All");
             }
 
-            var viewModel = _mapper.Map<LabelViewModel>(label);
+            var model = _mapper.Map<LabelViewModel>(label);
 
-            return View(viewModel);
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (label.Followers.Any(lu => lu.UserId == userId))
+                {
+                    model.IsFollowed = true;
+                }
+            }
+
+            return View(model);
         }
 
 
         [Authorize]
-        public async Task<IActionResult> FollowLabel(int id)
+        public async Task<IActionResult> FollowLabel(int labelId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _labelService.FollowLabel(id, userId);
+            await _labelService.FollowLabel(labelId, userId);
 
-            return Redirect(_referrerUrl);
+            return Redirect("/labels/details?labeId=" + labelId);
         }
 
 
 
         [Authorize]
-        public async Task<IActionResult> UnfollowLabel(int id)
+        public async Task<IActionResult> UnfollowLabel(int labelId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _labelService.UnfollowLabel(id, userId);
+            await _labelService.UnfollowLabel(labelId, userId);
 
-            return Redirect(_referrerUrl);
+            return Redirect("/labels/details?labeId=" + labelId);
         }
     }
 }

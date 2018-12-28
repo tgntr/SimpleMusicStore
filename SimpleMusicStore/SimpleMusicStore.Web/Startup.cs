@@ -53,12 +53,20 @@ namespace SimpleMusicStore.Web
                 .AddEntityFrameworkStores<SimpleDbContext>()
                 .AddDefaultTokenProviders();
 
+            services.AddSession(opt =>
+            {
+                opt.IdleTimeout = new TimeSpan(1, 0, 0);
+                opt.Cookie.IsEssential = true;
+            });
+
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_1);
 
             services.AddAutoMapper();
 
-            services.AddSession();
-    }
+            
+
+            services.ConfigureApplicationCookie(options => options.LoginPath = "/Profile/Login");
+        }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
         public void Configure(IApplicationBuilder app, IHostingEnvironment env)
@@ -81,6 +89,8 @@ namespace SimpleMusicStore.Web
             app.UseCookiePolicy();
 
             app.UseAuthentication();
+
+
 
             app.UseMvc(routes =>
             {

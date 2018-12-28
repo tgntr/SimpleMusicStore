@@ -25,6 +25,9 @@ namespace SimpleMusicStore.Web.Areas.Admin.Models.DiscogsDtos.RecordDtos
 
         public DiscogsRecordTrackDto[] Tracklist { get; set; }
 
+        public List<DiscogsRecordFormatDto> Formats { get; set; }
+
+
 
     }
 }

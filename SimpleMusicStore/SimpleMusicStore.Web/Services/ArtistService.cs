@@ -17,17 +17,6 @@ namespace SimpleMusicStore.Web.Services
         {
         }
 
-        //private async Task<List<Artist>> All()
-        //{
-        //    return await Task.Run(() => _context.Artists
-        //        .Include(a => a.Records)
-        //            .ThenInclude(r => r.Orders)
-        //                .ThenInclude(o => o.Order)
-        //        .Include(a => a.Followers)
-        //        .ToList());
-        //}
-
-
         private async Task<List<Artist>> All()
         {
             var artists = await _context.Artists
@@ -97,12 +86,12 @@ namespace SimpleMusicStore.Web.Services
                 return;
             }
 
-            var artistUser = new ArtistUser { ArtistId = artistId, UserId = userId };
-
-            if (_context.ArtistUsers.Contains(artistUser))
+            if (await _context.ArtistUsers.AnyAsync(au => au.ArtistId == artistId && au.UserId == userId))
             {
                 return;
             }
+
+            var artistUser = new ArtistUser { ArtistId = artistId, UserId = userId };
 
             await _context.ArtistUsers.AddAsync(artistUser);
             await _context.SaveChangesAsync();
@@ -115,9 +104,9 @@ namespace SimpleMusicStore.Web.Services
                 return;
             }
 
-            var artistUser = new ArtistUser { ArtistId = artistId, UserId = userId };
+            var artistUser = await _context.ArtistUsers.FirstOrDefaultAsync(au => au.ArtistId == artistId && au.UserId == userId);
 
-            if (!_context.ArtistUsers.Contains(artistUser))
+            if (artistUser == null)
             {
                 return;
             }

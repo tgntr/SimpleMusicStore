@@ -1,0 +1,26 @@
+﻿@model List<SimpleMusicStore.Web.Models.Dtos.AddressDto>
+@{
+    ViewData["Title"] = "My Addresses";
+}
+<br />
+<h2>My Addresses</h2>
+<hr />
+<a asp-controller="Addresses" asp-action="Add"><button type="submit" class="btn btn-group btn-default">New address</button></a>
+
+@foreach (var address in Model)
+{
+
+    <div class="form-group">
+        <hr />
+        <div><strong>@address.Street</strong></div>
+        <div>@address.City</div>
+        <div>@address.Country</div>
+        <br />
+        <div>
+            <a asp-controller="Addresses" asp-action="Edit" asp-route-addressId="@address.Id"><button type="submit" class="btn btngroup btn-default" w><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
+            <a asp-controller="Addresses" asp-action="Remove" asp-route-addressId="@address.Id" ><button type="submit" class="btn btngroup btn-default" onclick="return confirm('Are you sure you want to remove this address?');"><span class="glyphicon glyphicon-remove"></span> Remove</button></a>
+        </div>
+        <br />
+    </div>
+}
+

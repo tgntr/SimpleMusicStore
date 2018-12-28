@@ -52,5 +52,7 @@ namespace SimpleMusicStore.Models
         public decimal Price { get; set; }
 
         //quantity
+
+        public string Format { get; set; }
     }
 }

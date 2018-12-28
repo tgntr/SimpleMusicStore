@@ -16,13 +16,18 @@ namespace SimpleMusicStore.Web.Areas.Admin.Models
 
         [Display(Name = "Label")]
         public string Label { get; set; }
+
+        public int Year { get; set; }
+
+        public string Genre { get; set; }
         
         [Required]
-        [RegularExpression(@"^[0-9]+(\.[0-9]{1,2})?$", ErrorMessage = "Must be a valid price")]
-        [Range(1, 100, ErrorMessage = "Must be between 1$ and 100$")]
-        [Display(Name = "Price")]
+        [Range(1, 100.00, ErrorMessage = "Must be between 1$ and 100$")]
+        [Display(Name = "Set Price")]
         public decimal Price { get; set; }
-        
+
         public string ImageUrl { get; set; }
+
+        public string Format { get; set; }
     }
 }

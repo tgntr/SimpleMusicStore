@@ -5,8 +5,10 @@ using System.Security.Claims;
 using System.Threading.Tasks;
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using SimpleMusicStore.Data;
+using SimpleMusicStore.Models;
 using SimpleMusicStore.Web.Models.ViewModels;
 using SimpleMusicStore.Web.Services;
 
@@ -15,17 +17,18 @@ namespace SimpleMusicStore.Web.Controllers
     public class RecordsController : Controller
     {
         private readonly RecordService _recordService;
-        private readonly string _referrerUrl;
         private readonly IMapper _mapper;
+        private readonly UserManager<SimpleUser> _userManager;
 
 
 
 
-        public RecordsController(SimpleDbContext context, IMapper mapper)
+
+        public RecordsController(SimpleDbContext context, IMapper mapper, UserManager<SimpleUser> userManager)
         {
             _recordService = new RecordService(context);
             _mapper = mapper;
-            _referrerUrl = Request.Headers["Referer"].ToString();
+            _userManager = userManager;
         }
 
 
@@ -64,9 +67,9 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int recordId)
         {
-            var record = await _recordService.GetRecordAsync(id);
+            var record = await _recordService.GetRecordAsync(recordId);
 
             if (record is null)
             {
@@ -75,29 +78,35 @@ namespace SimpleMusicStore.Web.Controllers
 
             var viewModel = _mapper.Map<RecordViewModel>(record);
 
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (record.WantedBy.Any(ru=> ru.UserId == userId))
+                {
+                    viewModel.IsFollowed = true;
+                }
+            }
             return View(viewModel);
         }
 
 
 
         [Authorize]
-        public async Task<IActionResult> AddToWantlist(int id)
+        public async Task<IActionResult> AddToWantlist(int recordId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _recordService.AddToWantlist(id, userId);
-
-            return Redirect(_referrerUrl);
+            await _recordService.AddToWantlist(recordId, userId);;
+            return Redirect("/records/details?recordId=" + recordId);
         }
 
 
 
         [Authorize]
-        public async Task<IActionResult> RemoveFromWantList(int id)
+        public async Task<IActionResult> RemoveFromWantList(int recordId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _recordService.RemoveFromWantlist(id, userId);
-
-            return Redirect(_referrerUrl);
+            await _recordService.RemoveFromWantlist(recordId, userId);
+            return Redirect("/records/details?recordId=" + recordId);
         }
     }
 }

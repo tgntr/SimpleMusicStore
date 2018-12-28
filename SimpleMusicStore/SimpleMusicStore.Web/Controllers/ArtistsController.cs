@@ -15,7 +15,6 @@ namespace SimpleMusicStore.Web.Controllers
     public class ArtistsController : Controller
     {
         private readonly ArtistService _artistService;
-        private readonly string _referrerUrl;
         private readonly IMapper _mapper;
 
         
@@ -24,7 +23,6 @@ namespace SimpleMusicStore.Web.Controllers
         {
             _artistService = new ArtistService(context);
             _mapper = mapper;
-            _referrerUrl = Request.Headers["Referer"].ToString();
         }
 
 
@@ -36,44 +34,44 @@ namespace SimpleMusicStore.Web.Controllers
             {
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            List<ArtistViewModel> artists = (await _artistService.All(orderBy, userId)).Select(_mapper.Map<ArtistViewModel>).ToList();
+            List<ArtistViewModel> model = (await _artistService.All(orderBy, userId)).Select(_mapper.Map<ArtistViewModel>).ToList();
 
-            return View(artists);
+            return View(model);
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int artistId)
         {
-            var artist = await _artistService.GetArtist(id);
+            var artist = await _artistService.GetArtist(artistId);
 
             if (artist is null)
             {
                 return RedirectToAction("All");
             }
 
-            var viewModel = _mapper.Map<ArtistViewModel>(artist);
+            var model = _mapper.Map<ArtistViewModel>(artist);
 
-            return View(viewModel);
+            return View(model);
         }
 
 
 
         [Authorize]
-        public async Task<IActionResult> Follow(int id)
+        public async Task<IActionResult> Follow(int artistId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _artistService.FollowArtist(id, userId);
+            await _artistService.FollowArtist(artistId, userId);
 
-            return Redirect(_referrerUrl);
+            return Redirect("/artists/details?artistId=" + artistId);
         }
 
 
         [Authorize]
-        public async Task<IActionResult> Unfollow(int id)
+        public async Task<IActionResult> Unfollow(int artistId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _artistService.UnfollowArtist(id, userId);
+            await _artistService.UnfollowArtist(artistId, userId);
         
-            return Redirect(_referrerUrl);
+            return Redirect("/artists/details?artistId=" + artistId);
         }
 
     }

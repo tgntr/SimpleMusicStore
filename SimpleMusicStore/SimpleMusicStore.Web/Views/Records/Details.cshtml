@@ -1,0 +1,142 @@
+﻿@model SimpleMusicStore.Web.Models.ViewModels.RecordViewModel
+@{
+    ViewData["Title"] = Model.Artist.Name + " - " + Model.Title;
+}
+<br />
+<div class="row">
+    <div class="col-md-3">
+            <img src="@Model.ImageUrl" alt="" height="100%" width="100%" />
+    </div>
+    <div class="col-md-9">
+        <h3><strong>@Model.Title</strong></h3>
+        <hr />
+        <div class="col-md-5">
+
+            <table>
+                <col width="80" />
+                <col width="300" />
+                <tr>
+                    <td><h4><strong>Artist:</strong></h4></td>
+                    <td><a asp-area="" asp-controller="Artists" asp-action="Details" asp-route-artistId="@Model.Artist.Id"><h4>@Model.Artist.Name</h4></a></td>
+                </tr>
+                <tr>
+                    <td><h4><strong>Label:</strong></h4></td>
+                    <td><a asp-area="" asp-controller="Labels" asp-action="Details" asp-route-labelId="@Model.Label.Id"><h4>@Model.Label.Name</h4></a></td>
+                </tr>
+                <tr>
+                    <td><h4><strong>Year:</strong></h4></td>
+                    <td><h4>@Model.Year</h4></td>
+                </tr>
+                <tr>
+                    <td><h4><strong>Genre:</strong></h4></td>
+                    <td><h4>@Model.Genre</h4></td>
+                </tr>
+                <tr>
+                    <td><h4><strong>Format:</strong></h4></td>
+                    <td><h4>@Model.Format</h4></td>
+                </tr>
+            </table>
+        </div>
+
+
+
+        <div class="col-md-7">
+            <h3><strong>Price: </strong>$@Model.Price</h3>
+            <div class="row">
+                <div class="col-md-5">
+                    <div class="form-group">
+
+                        <a asp-area="" asp-controller="Orders" asp-action="AddToCart" asp-route-recordId="@Model.Id"><button type="submit" class="btn btn-group btn-default"><span class="glyphicon glyphicon-shopping-cart"></span> Buy</button></a>
+                    </div>
+                    <div class="form-group">
+                        @if (Model.IsFollowed)
+                        {
+                            <a asp-area="" asp-controller="Records" asp-action="RemoveFromWantlist" asp-route-recordId="@Model.Id"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-heart"></span> Remove from Wantlist</button></a>
+
+                        }
+                        else
+                        {
+                            <a asp-area="" asp-controller="Records" asp-action="AddToWantlist" asp-route-recordId="@Model.Id"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-heart-empty"></span> Add to Wantlist</button></a>
+                        }
+                    </div>
+                </div>
+                <div class="col-md-3">
+                    @if (User.IsInRole("Admin"))
+                    {
+                        <div class="form-group">
+                            <a asp-area="Admin" asp-controller="Record" asp-action="Edit" asp-route-recordId="@Model.Id"><button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-edit"></span> Edit</button></a>
+                        </div>
+                        <div class="form-group">
+                            <a asp-area="Admin" asp-controller="Record" asp-action="Remove" asp-route-recordId="@Model.Id"><button type="submit" class="btn btn-default" onclick="return confirm('Are you sure you want to remove this record from the store?');"><span class="glyphicon glyphicon-remove"></span> Remove</button></a>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br />
+<hr />
+<div class="row">
+    <div class="col-md-6">
+        <h4><strong><span class="glyphicon glyphicon-list"></span> Tracklist</strong></h4>
+        <hr />
+        <table>
+            <col width="30" />
+            <col width="485" />
+            <col width="40" />
+
+            @for (int i = 0; i < Model.Tracks.Count; i++)
+            {
+                var track = Model.Tracks[i];
+                <tr>
+                    <td>@(i + 1).</td>
+                    <td>@track.Title</td>
+                    <td>@track.Duration</td>
+                </tr>
+            }
+        </table>
+        <br />
+        <hr />
+        <h4><strong><span class="glyphicon glyphicon-comment"></span> Comments</strong></h4>
+        <hr />
+        <form asp-controller="Comments" asp-action="CommentRecord" asp-route-recordId="@Model.Id" method="post">
+            <div class="row">
+                <div class="col-sm-12">
+                    <div class="form-group">
+                        <textarea asp-for="Comment" class="form-control" rows="4"></textarea>
+                        <span asp-validation-for="Comment" class="text-danger"></span>
+                    </div>
+                </div>
+
+            </div>
+            <div class="form-group">
+                <button type="submit" class="btn btn-default"><span class="glyphicon glyphicon-pencil"></span> Comment</button>
+            </div>
+        </form>
+        <div class="row">
+            <div class="col-md-12">
+                @foreach (var comment in Model.Comments.OrderByDescending(c => c.DatePosted))
+                {
+                    <hr />
+                    <div class="form-group">
+                        <span class="glyphicon glyphicon-user"></span><strong> @comment.User</strong>&nbsp;&nbsp;&nbsp;&nbsp;
+                        <small><span class="glyphicon glyphicon-time"></span> @comment.DateFormat</small>
+                    </div>
+                    <div class="form-group" style="word-wrap : break-word">@comment.Content</div>
+                }
+            </div>
+        </div>
+        <br />
+        <hr />
+    </div>
+
+    <div class="col-md-6">
+        <h4><strong><span class="glyphicon glyphicon-film"></span> Videos</strong></h4>
+        <hr />
+        @foreach (var video in Model.Videos)
+        {
+            <iframe width="250" height="180" src="https://www.youtube.com/embed/@video.YoutubeId"></iframe>
+        }
+    </div>
+</div>

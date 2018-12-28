@@ -13,6 +13,10 @@ namespace SimpleMusicStore.Web.Models.ViewModels
 
         public List<string> AllGenres => Records.Select(r => r.Genre).Distinct().ToList();
 
+        public List<string> SelectedFormats { get; set; } = new List<string>();
+
+        public List<string> AllFormats => Records.Select(r => r.Format).Distinct().ToList();
+
         public string Sort { get; set; }
     }
 }

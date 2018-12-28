@@ -10,5 +10,7 @@ namespace SimpleMusicStore.Web.Models.Dtos
         public string Title { get; set; }
 
         public string Url { get; set; }
+
+        public string YoutubeId => Url.Split("=").Last();
     }
 }

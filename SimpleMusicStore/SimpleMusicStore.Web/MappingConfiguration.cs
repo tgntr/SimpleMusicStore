@@ -30,9 +30,13 @@ namespace SimpleMusicStore
                 .ForMember(a => a.Id, map => map.Ignore());
 
             CreateMap<DiscogsRecordTrackDto, Track>();
-
-
-
+            
+            CreateMap<DiscogsRecordDto, RecordAdminViewModel>()
+                .ForMember(r => r.Artist, map => map.MapFrom(dto => dto.Artists.First().Name))
+                .ForMember(r => r.Label, map => map.MapFrom(dto => dto.Labels.First().Name))
+                .ForMember(r => r.Genre, map => map.MapFrom(dto => dto.Genres.First()))
+                .ForMember(r => r.ImageUrl, map => map.MapFrom(dto => dto.Images.First().Uri))
+                .ForMember(r => r.Format, map => map.MapFrom(dto => dto.Formats.First().Name));
 
 
             //view models
@@ -46,10 +50,7 @@ namespace SimpleMusicStore
 
             CreateMap<Record, RecordViewModel>();
 
-            CreateMap<DiscogsRecordDto, RecordAdminViewModel>()
-                .ForMember(r => r.Artist, map => map.MapFrom(dto => dto.Artists.First().Name))
-                .ForMember(r => r.Label, map => map.MapFrom(dto => dto.Labels.First().Name))
-                .ForMember(r => r.ImageUrl, map => map.MapFrom(dto => dto.Images.First().Uri));
+            
 
             CreateMap<Record, RecordAdminViewModel>()
                 .ForMember(r => r.Artist, map => map.MapFrom(r => r.Artist.Name))
@@ -80,7 +81,6 @@ namespace SimpleMusicStore
 
             CreateMap<RecordOrder, CartRecordViewModel>()
                 .ForMember(cr => cr.Artist, map => map.MapFrom(ro => ro.Record.Artist))
-                .ForMember(cr => cr.ImageUrl, map => map.MapFrom(ro => ro.Record.ImageUrl))
                 .ForMember(cr => cr.Label, map => map.MapFrom(ro => ro.Record.Label))
                 .ForMember(cr => cr.Artist, map => map.MapFrom(ro => ro.Record.Artist))
                 .ForMember(cr => cr.Price, map => map.MapFrom(ro => ro.Record.Price))

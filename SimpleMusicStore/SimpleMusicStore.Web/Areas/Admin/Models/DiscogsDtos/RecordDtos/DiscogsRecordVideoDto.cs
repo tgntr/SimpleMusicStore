@@ -3,7 +3,6 @@
     public class DiscogsRecordVideoDto
     {
         public string Uri { get; set; }
-
-        public string Title { get; set; }
+        
     }
 }

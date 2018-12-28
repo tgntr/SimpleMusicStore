@@ -17,25 +17,29 @@ namespace SimpleMusicStore.Web.Services
     internal class OrderService : Service
     {
         private const string _cart = "cart";
-
-        private readonly ISession _session;
+        
         private readonly RecordService _recordService;
         private readonly IMapper _mapper;
 
-        public OrderService(SimpleDbContext context, ISession session, IMapper mapper)
+        public OrderService(SimpleDbContext context, IMapper mapper)
             : base(context)
         {
-            _session = session;
             _recordService = new RecordService(context);
             _mapper = mapper;
         }
 
 
 
-        internal void AddToCart(int recordId)
+        internal void AddToCart(int recordId, ISession session)
         {
+            if (!_recordService.IsValidRecordId(recordId))
+            {
+                return;
+            }
+
             var itemToAdd = new CartItemDto { RecordId = recordId };
-            var cart = GetCart();
+
+            var cart = GetCart(session);
             if (cart == null)
             {
                 cart = new List<CartItemDto>();
@@ -52,12 +56,12 @@ namespace SimpleMusicStore.Web.Services
                 cart.Add(itemToAdd);
             }
 
-            _session.SetString(_cart, JsonConvert.SerializeObject(cart));
+            session.SetString(_cart, JsonConvert.SerializeObject(cart));
         }
         
-        internal void DecreaseQuantity(int recordId)
+        internal void DecreaseQuantity(int recordId, ISession session)
         {
-            var cart = GetCart();
+            var cart = GetCart(session);
             if (cart == null)
             {
                 return;
@@ -71,20 +75,20 @@ namespace SimpleMusicStore.Web.Services
             
             if (item.Quantity == 1)
             {
-                cart.Remove(item);
+                return;
             }
             else
             {
                 item.Quantity--;
             }
 
-            _session.SetString(_cart, JsonConvert.SerializeObject(cart));
+            session.SetString(_cart, JsonConvert.SerializeObject(cart));
         }
 
 
-        internal void RemoveFromCart(int recordId)
+        internal void RemoveFromCart(int recordId, ISession session)
         {
-            var cart = GetCart();
+            var cart = GetCart(session);
             if (cart == null)
             {
                 return;
@@ -98,21 +102,21 @@ namespace SimpleMusicStore.Web.Services
 
             cart.Remove(item);
 
-            _session.SetString(_cart, JsonConvert.SerializeObject(cart));
+            session.SetString(_cart, JsonConvert.SerializeObject(cart));
         }
 
 
 
-        internal async Task<int> Order(CartOrderViewModel model, string userId)
+        internal async Task<int> Order(CartOrderViewModel model, string userId, ISession session, decimal totalPrice)
         {
-            var cart = GetCart();
+            var cart = GetCart(session);
 
             if (cart == null)
             {
                 return -1;
             }
 
-            var order = new Order { DeliveryAddressId = model.DeliveryAddressId, UserId = userId, TotalPrice = model.TotalPrice};
+            var order = new Order { DeliveryAddressId = model.DeliveryAddressId, UserId = userId, TotalPrice = totalPrice};
 
             order.Items = cart.Select(_mapper.Map<RecordOrder>).ToList();
             
@@ -122,16 +126,16 @@ namespace SimpleMusicStore.Web.Services
             await _context.Orders.AddAsync(order);
             await _context.SaveChangesAsync();
 
-            EmptyCart();
+            EmptyCart(session);
 
             return order.Id;
         }
 
 
 
-        internal List<CartItemDto> GetCart()
+        internal List<CartItemDto> GetCart(ISession session)
         {
-            var value = _session.GetString(_cart);
+            var value = session.GetString(_cart);
             return value == null ? null : JsonConvert.DeserializeObject<List<CartItemDto>>(value);
         }
 
@@ -148,9 +152,9 @@ namespace SimpleMusicStore.Web.Services
                 .FirstOrDefaultAsync(o => o.Id == orderId);
         }
 
-        internal void EmptyCart()
+        internal void EmptyCart(ISession session)
         {
-            _session.SetString(_cart, "");
+            session.SetString(_cart, "");
         }
     }
 }

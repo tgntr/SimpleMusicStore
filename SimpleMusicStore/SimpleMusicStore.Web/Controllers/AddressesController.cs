@@ -45,7 +45,13 @@ namespace SimpleMusicStore.Web.Controllers
                 return View(model);
             }
 
-            await _addressService.AddAddress(_mapper.Map<Address>(model));
+            var address = _mapper.Map<Address>(model);
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+            address.UserId = userId;
+
+            await _addressService.AddAddress(address);
 
             return Redirect("/profile/addresses");
         }

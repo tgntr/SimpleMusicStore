@@ -56,15 +56,17 @@ namespace SimpleMusicStore.Web.Services
             {
                 return null;
             }
-
-
-            var videos = recordDto.Videos.Select(_mapper.Map<Video>).ToList();
+            List<Video> videos = new List<Video>();
+            if (recordDto.Videos != null)
+            {
+                videos = recordDto.Videos.Select(_mapper.Map<Video>).ToList();
+            }
 
             var labelInfo = recordDto.Labels.First();
             var label = await _context.Labels.FirstOrDefaultAsync(l => l.DiscogsId == labelInfo.Id);
             if (label is null)
             {
-                var labelDto = DiscogsUtilities.GetAsync<DiscogsLabelDto>(labelInfo.Id);
+                var labelDto = await DiscogsUtilities.GetAsync<DiscogsLabelDto>(labelInfo.Id);
                 label = _mapper.Map<Label>(labelDto);
             }
 
@@ -72,7 +74,7 @@ namespace SimpleMusicStore.Web.Services
             var artist = await _context.Artists.FirstOrDefaultAsync(a => a.DiscogsId == artistInfo.Id);
             if (artist is null)
             {
-                var artistDto = DiscogsUtilities.GetAsync<DiscogsArtistDto>(artistInfo.Id);
+                var artistDto = await DiscogsUtilities.GetAsync<DiscogsArtistDto>(artistInfo.Id);
                 artist = _mapper.Map<Artist>(artistDto);
             }
 
@@ -84,9 +86,15 @@ namespace SimpleMusicStore.Web.Services
 
             var tracks = recordDto.Tracklist.Select(_mapper.Map<Track>).ToList();
 
-            var imageUrl = recordDto.Images.First().Uri;
+            var imageUrl = @"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/12in-Vinyl-LP-Record-Angle.jpg/330px-12in-Vinyl-LP-Record-Angle.jpg";
+            if (recordDto.Images != null)
+            {
+                imageUrl = recordDto.Images.First().Uri;
+            }
 
             var title = recordDto.Title;
+
+            var format = recordDto.Formats.First().Name;
 
             var record = new Record
             {
@@ -98,7 +106,8 @@ namespace SimpleMusicStore.Web.Services
                 Year = year,
                 Tracks = tracks,
                 ImageUrl = imageUrl,
-                Title = title
+                Title = title,
+                Format = format
             };
 
             return record;
@@ -122,12 +131,15 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal async Task<bool> IsValidRecordId(int recordId)
+        internal async Task<bool> IsValidRecordIdAsync(int recordId)
         {
             return await _context.Records.AnyAsync(r => r.Id == recordId);
         }
 
-
+        internal bool IsValidRecordId(int recordId)
+        {
+            return  _context.Records.Any(r => r.Id == recordId);
+        }
 
 
         internal async Task<Record> GetRecordAsync(int recordId)
@@ -138,7 +150,8 @@ namespace SimpleMusicStore.Web.Services
                 .Include(r=>r.Videos)
                 .Include(r=>r.Tracks)
                 .Include(r=>r.Comments)
-                    .ThenInclude(c=>c.User.UserName)
+                    .ThenInclude(c=>c.User)
+                .Include(r=>r.WantedBy)
                 .FirstOrDefaultAsync(r => r.Id == recordId);
         }
 
@@ -150,7 +163,7 @@ namespace SimpleMusicStore.Web.Services
                 .Include(r => r.Videos)
                 .Include(r => r.Tracks)
                 .Include(r => r.Comments)
-                    .ThenInclude(c => c.User.UserName)
+                    .ThenInclude(c => c.User)
                 .FirstOrDefault(r => r.Id == recordId);
         }
 
@@ -264,34 +277,38 @@ namespace SimpleMusicStore.Web.Services
 
         internal async Task AddToWantlist(int recordId, string userId)
         {
-            if (!await IsValidRecordId(recordId))
+            if (!await IsValidRecordIdAsync(recordId))
+            {
+                return;
+            }
+            if (await _context.RecordUsers.AnyAsync(ru=>ru.RecordId == recordId && ru.UserId == userId))
             {
                 return;
             }
 
             var recordUser = new RecordUser { RecordId = recordId, UserId = userId };
 
-            if (_context.RecordUsers.Contains(recordUser))
-            {
-                return;
-            }
+            
             await _context.RecordUsers.AddAsync(recordUser);
             await _context.SaveChangesAsync();
         }
 
+
+
         internal async Task RemoveFromWantlist(int recordId, string userId)
         {
-            if (!await IsValidRecordId(recordId))
+            if (!await IsValidRecordIdAsync(recordId))
             {
                 return;
             }
 
-            var recordUser = new RecordUser { RecordId = recordId, UserId = userId };
+            var recordUser = await _context.RecordUsers.FirstOrDefaultAsync(ru => ru.RecordId == recordId && ru.UserId == userId);
 
-            if (!_context.RecordUsers.Contains(recordUser))
+            if (recordUser == null)
             {
                 return;
             }
+
             _context.RecordUsers.Remove(recordUser);
             await _context.SaveChangesAsync();
 

@@ -7,6 +7,7 @@ using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using SimpleMusicStore.Data;
+using SimpleMusicStore.Web.Models.Dtos;
 using SimpleMusicStore.Web.Models.ViewModels;
 using SimpleMusicStore.Web.Services;
 
@@ -19,18 +20,16 @@ namespace SimpleMusicStore.Web.Controllers
         private readonly RecordService _recordService;
         private readonly AddressService _addressService;
         private readonly IMapper _mapper;
-        private readonly string _referrerUrl;
 
 
 
 
         public OrdersController(SimpleDbContext context, IMapper mapper)
         {
-            _orderService = new OrderService(context, HttpContext.Session, mapper);
+            _orderService = new OrderService(context, mapper);
             _recordService = new RecordService(context);
             _addressService = new AddressService(context);
             _mapper = mapper;
-            _referrerUrl = Request.Headers["Referer"].ToString();
         }
 
 
@@ -61,70 +60,90 @@ namespace SimpleMusicStore.Web.Controllers
         }
 
 
-        public IActionResult Preview()
+        public async Task<IActionResult> Preview(string sessionId)
         {
-            var cart = GetCart();
-
-            if (cart.TotalPrice <= 0)
+            if (sessionId != HttpContext.Session.Id)
             {
-                ModelState.AddModelError(string.Empty, "Your cart is empty!");
-
-                return Redirect("/orders/cart");
+                return RedirectToAction("Cart");
             }
 
-            return View(cart);
+            var model = GetCart();
+            
+            if (model.Items.Count() == 0)
+            {
+                return RedirectToAction("Cart");
+            }
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            model.Addresses = (await _addressService.AllUserAddresses(userId)).Select(_mapper.Map<AddressDto>).ToList();
+
+            return View(model);
         }
 
 
         [HttpPost]
-        public async Task<IActionResult> Preview(CartOrderViewModel model)
+        public async Task<IActionResult> Preview(string sessionId, CartOrderViewModel model)
         {
+            if (sessionId != HttpContext.Session.Id)
+            {
+                return RedirectToAction("Cart");
+            }
+
+            var cart = GetCart();
+
+            if (cart.Items.Count() == 0)
+            {
+                return RedirectToAction("Cart");
+            }
+
             if (!ModelState.IsValid)
             {
                 ModelState.AddModelError(string.Empty, "Please select delivery address!");
 
-                return View(model);
+                return View(cart);
             }
+
+
             
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var orderId = await _orderService.Order(model, userId);
+            var orderId = await _orderService.Order(model, userId, HttpContext.Session, cart.TotalPrice());
 
-            return Redirect($"/orders/details/{orderId}");
+            return Redirect($"/orders/details?orderId={orderId}");
         }
         
 
 
         public IActionResult AddToCart(int recordId)
         {
-            _orderService.AddToCart(recordId);
+            _orderService.AddToCart(recordId, HttpContext.Session);
 
-            return Redirect(_referrerUrl);
+            return RedirectToAction("Cart");
         }
 
 
 
         public IActionResult RemoveFromCart(int recordId)
         {
-            _orderService.RemoveFromCart(recordId);
+            _orderService.RemoveFromCart(recordId, HttpContext.Session);
 
-            return Redirect(_referrerUrl);
+            return RedirectToAction("Cart");
         }
 
 
         public IActionResult DecreaseQuantity(int recordId)
         {
-            _orderService.DecreaseQuantity(recordId);
+            _orderService.DecreaseQuantity(recordId, HttpContext.Session);
 
-            return Redirect(_referrerUrl);
+            return RedirectToAction("Cart");
         }
 
 
 
         public IActionResult EmptyCart(int recordId)
         {
-            _orderService.EmptyCart();
+            _orderService.EmptyCart(HttpContext.Session);
 
-            return Redirect(_referrerUrl);
+            return RedirectToAction("Cart");
         }
 
 
@@ -132,17 +151,22 @@ namespace SimpleMusicStore.Web.Controllers
 
         private CartOrderViewModel GetCart()
         {
-            var items =  _orderService.GetCart()
-                .Select(c =>
-                {
-                    var record = _recordService.GetRecord(c.RecordId);
-                    var cartRecordViewModel = _mapper.Map<CartRecordViewModel>(record);
-                    cartRecordViewModel.Quantity = c.Quantity;
-                    return  cartRecordViewModel;
-                })
-                .ToList();
+            List<CartRecordViewModel> items = new List<CartRecordViewModel>();
+            List<CartItemDto> cart = _orderService.GetCart(HttpContext.Session);
+            if (cart != null)
+            {
+                items = _orderService.GetCart(HttpContext.Session)
+                    .Select(c =>
+                    {
+                        var record = _recordService.GetRecord(c.RecordId);
+                        var cartRecordViewModel = _mapper.Map<CartRecordViewModel>(record);
+                        cartRecordViewModel.Quantity = c.Quantity;
+                        return cartRecordViewModel;
+                    })
+                    .ToList();
+            }
 
-            return new CartOrderViewModel { Items =  items };
+            return new CartOrderViewModel { Items =  items, SessionId = HttpContext.Session.Id };
         }
     }
 }

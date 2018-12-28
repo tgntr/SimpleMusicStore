@@ -12,5 +12,7 @@ namespace SimpleMusicStore.Web.Models.Dtos
         public string Content { get; set; }
 
         public DateTime DatePosted { get; set; }
+
+        public string DateFormat => DatePosted.ToString("MMMM dd, yyyy");
     }
 }

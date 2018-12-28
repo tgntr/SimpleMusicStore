@@ -10,16 +10,25 @@ namespace SimpleMusicStore.Web.Models.ViewModels
 {
     public class CartOrderViewModel
     {
-        [Required]
+        [Required(ErrorMessage = "Please choose delivery address")]
         public int DeliveryAddressId { get; set; }
 
         public AddressDto DeliveryAddress { get; set; }
+        
+        public List<AddressDto> Addresses { get; set; }
 
         public List<CartRecordViewModel> Items { get; set; }
 
         public DateTime OrderDate { get; set; } = DateTime.UtcNow;
 
-        public decimal TotalPrice => Items.Sum(i => i.Price * i.Quantity);
+        public string OrderDateFormat => OrderDate.ToString("MMMM dd, yyyy");
 
+
+        public string SessionId { get; set; }
+
+        public decimal TotalPrice()
+        {
+            return Items.Sum(i => i.Quantity * i.Price);
+        }
     }
 }

@@ -34,7 +34,12 @@ namespace SimpleMusicStore.Web.Models.ViewModels
 
         [Required]
         public string Comment { get; set; }
-        
-        
+
+        public decimal Price { get; set; }
+
+        public bool IsFollowed { get; set; } = false;
+
+        public string Format { get; set; }
+
     }
 }

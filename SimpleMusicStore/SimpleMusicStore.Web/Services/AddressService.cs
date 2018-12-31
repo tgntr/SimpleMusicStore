@@ -53,7 +53,7 @@ namespace SimpleMusicStore.Web.Services
                 return;
             }
 
-            _context.Addresses.Remove(address);
+            address.IsActive = false;
             await _context.SaveChangesAsync();
         }
 
@@ -65,7 +65,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal async Task<List<Address>> AllUserAddresses(string userId)
         {
-            return await _context.Addresses.Where(a => a.UserId == userId).ToListAsync();
+            return await _context.Addresses.Where(a => a.UserId == userId && a.IsActive).ToListAsync();
         }
         
     }

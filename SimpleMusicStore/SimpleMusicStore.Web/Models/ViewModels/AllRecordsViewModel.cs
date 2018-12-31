@@ -11,11 +11,11 @@ namespace SimpleMusicStore.Web.Models.ViewModels
 
         public List<string> SelectedGenres { get; set; } = new List<string>();
 
-        public List<string> AllGenres => Records.Select(r => r.Genre).Distinct().ToList();
-
+        public List<string> AllGenres { get; set; }
+        
         public List<string> SelectedFormats { get; set; } = new List<string>();
 
-        public List<string> AllFormats => Records.Select(r => r.Format).Distinct().ToList();
+        public List<string> AllFormats { get; set; }
 
         public string Sort { get; set; }
     }

@@ -29,5 +29,7 @@ namespace SimpleMusicStore.Models
         public SimpleUser User { get; set; }
 
         public List<Order> Orders { get; set; } = new List<Order>();
+
+        public bool IsActive { get; set; } = true;
     }
 }

@@ -19,13 +19,16 @@
             <span class="caret"></span>
         </a>
         <ul id="menu1" class="dropdown-menu" aria-labelledby="drop4">
+            <li class="dropdown-header"><span class="glyphicon glyphicon-heart"></span> My Favorites</li>
 
             <li><a asp-area="" asp-controller="Profile" asp-action="Wantlist">Wantlist</a></li>
             <li><a asp-area="" asp-controller="Profile" asp-action="FollowedArtists">Followed Artists</a></li>
             <li><a asp-area="" asp-controller="Profile" asp-action="FollowedLabels">Followed Labels</a></li>
+            <li role="separator" class="divider"></li>
+            <li class="dropdown-header"><span class="glyphicon glyphicon-user"></span> My Profile</li>
             <li><a asp-area="" asp-controller="Profile" asp-action="Addresses">Addresses</a></li>
-            <li><a asp-area="" asp-controller="Profile" asp-action="Orders">Orders</a></li>
             <li><a asp-area="" asp-controller="Profile" asp-action="Comments">Comments</a></li>
+            <li><a asp-area="" asp-controller="Profile" asp-action="Orders">Orders</a></li>
             <li role="separator" class="divider"></li>
             <li><a asp-area="" asp-controller="Profile" asp-action="Logout"><span class="glyphicon glyphicon-off"></span> Logout</a></li>
         </ul>

@@ -1,4 +1,127 @@
-﻿@{
+﻿@model SimpleMusicStore.Web.Models.ViewModels.HomeViewModel
+@{
     ViewData["Title"] = "Home";
 }
+<br />
+@if (User.Identity.IsAuthenticated)
+{
+    <div class="row">
+        <h3><strong>Recommended for you</strong></h3>
+        <br />
+        @for (int i = 0; i < Model.RecommendedRecords.Count; i++)
+        {
+            if (i == 6)
+            {
 
+            @:</div>
+            @:<div class="row">
+                <br />
+            }
+
+            var record = Model.RecommendedRecords[i];
+
+            <div class="col-md-2">
+                <div class="form-group">
+                    <a asp-controller="Records" asp-action="Details" asp-route-recordId="@record.Id">
+                        <img src="@record.ImageUrl" alt="@record.Artist  - @record.Title" width="100%" height="100%" />
+                    </a>
+                </div>
+                <div>
+                    <a asp-controller="Artists" asp-action="Details" asp-route-artistId="@record.Artist.Id">
+                        @record.Artist.Name
+                    </a> –
+                </div>
+                <div>
+                    <a asp-controller="Records" asp-action="Details" asp-route-recordId="@record.Id">
+                        @record.Title
+                    </a>
+                </div>
+                <div>
+                    <a asp-controller="Labels" asp-action="Details" asp-route-labelId="@record.Label.Id">
+                        [@record.Label.Name]
+                    </a>
+                </div>
+            </div>
+        }
+    </div>
+}
+<hr />
+<div class="row">
+    <h3><strong>Most popular records</strong></h3>
+    <br />
+    @for (int i = 0; i < Model.MostPopularRecords.Count; i++)
+    {
+        if (i == 6)
+        {
+
+        @:</div>
+        @:<div class="row">
+            <br />
+        }
+
+        var record = Model.MostPopularRecords[i];
+
+        <div class="col-md-2">
+            <div class="form-group">
+                <a asp-controller="Records" asp-action="Details" asp-route-recordId="@record.Id">
+                    <img src="@record.ImageUrl" alt="@record.Artist  - @record.Title" width="100%" height="100%" />
+                </a>
+            </div>
+            <div>
+                <a asp-controller="Artists" asp-action="Details" asp-route-artistId="@record.Artist.Id">
+                    @record.Artist.Name
+                </a> –
+            </div>
+            <div>
+                <a asp-controller="Records" asp-action="Details" asp-route-recordId="@record.Id">
+                    @record.Title
+                </a>
+            </div>
+            <div>
+                <a asp-controller="Labels" asp-action="Details" asp-route-labelId="@record.Label.Id">
+                    [@record.Label.Name]
+                </a>
+            </div>
+        </div>
+    }
+</div>
+          <hr />
+<div class="row">
+    <h3><strong>New arrivals</strong></h3>
+    <br />
+    @for (int i = 0; i < Model.NewArrivals.Count; i++)
+    {
+        if (i == 6)
+        {
+
+        @:</div>
+        @:<div class="row">
+            <br />
+        }
+
+        var record = Model.NewArrivals[i];
+
+        <div class="col-md-2">
+            <div class="form-group">
+                <a asp-controller="Records" asp-action="Details" asp-route-recordId="@record.Id">
+                    <img src="@record.ImageUrl" alt="@record.Artist  - @record.Title" width="100%" height="100%" />
+                </a>
+            </div>
+            <div>
+                <a asp-controller="Artists" asp-action="Details" asp-route-artistId="@record.Artist.Id">
+                    @record.Artist.Name
+                </a> –
+            </div>
+            <div>
+                <a asp-controller="Records" asp-action="Details" asp-route-recordId="@record.Id">
+                    @record.Title
+                </a>
+            </div>
+            <div>
+                <a asp-controller="Labels" asp-action="Details" asp-route-labelId="@record.Label.Id">
+                    [@record.Label.Name]
+                </a>
+            </div>
+        </div>
+    }
+</div>

@@ -50,6 +50,18 @@ namespace SimpleMusicStore.Web.Controllers
 
             var model = _mapper.Map<ArtistViewModel>(artist);
 
+            if (User.Identity.IsAuthenticated)
+            {
+                var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+                if (artist.Followers.Any(lu => lu.UserId == userId))
+                {
+                    model.IsFollowed = true;
+                }
+                model.Comments.ForEach(c => c.IsCreator = c.UserId == userId);
+            }
+
+            model.Records = model.Records.Where(r=>r.IsActive).OrderByDescending(r => r.DateAdded).ToList();
+
             return View(model);
         }
 

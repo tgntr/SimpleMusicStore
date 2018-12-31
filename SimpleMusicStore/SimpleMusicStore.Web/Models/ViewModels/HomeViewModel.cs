@@ -9,10 +9,12 @@ namespace SimpleMusicStore.Web.Models.ViewModels
     {
         public List<RecordViewModel> MostPopularRecords { get; set; }
 
-        public List<ArtistViewModel> MostPopularArtists { get; set; }
-
-        public List<LabelViewModel> MostPopularLabels { get; set; } 
+       //public List<ArtistViewModel> MostPopularArtists { get; set; }
+       //
+       //public List<LabelViewModel> MostPopularLabels { get; set; } 
 
         public List<RecordViewModel> RecommendedRecords { get; set; }
+
+        public List<RecordViewModel> NewArrivals { get; set; }
     }
 }

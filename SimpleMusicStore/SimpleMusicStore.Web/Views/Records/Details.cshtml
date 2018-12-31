@@ -45,8 +45,11 @@
             <div class="row">
                 <div class="col-md-5">
                     <div class="form-group">
+                        @if (Model.IsActive)
+                        {
+                            <a asp-area="" asp-controller="Orders" asp-action="AddToCart" asp-route-recordId="@Model.Id"><button type="submit" class="btn btn-group btn-default"><span class="glyphicon glyphicon-shopping-cart"></span> Buy</button></a>
+                        }
 
-                        <a asp-area="" asp-controller="Orders" asp-action="AddToCart" asp-route-recordId="@Model.Id"><button type="submit" class="btn btn-group btn-default"><span class="glyphicon glyphicon-shopping-cart"></span> Buy</button></a>
                     </div>
                     <div class="form-group">
                         @if (Model.IsFollowed)
@@ -124,6 +127,10 @@
                         <small><span class="glyphicon glyphicon-time"></span> @comment.DateFormat</small>
                     </div>
                     <div class="form-group" style="word-wrap : break-word">@comment.Content</div>
+                    if (comment.IsCreator)
+                    {
+                        <a asp-controller="Comments" asp-action="Remove" asp-route-commentId="@comment.Id"><button type="submit" class="btn btngroup btn-default" onclick="return confirm('Are you sure you want to remove this comment?');"><span class="glyphicon glyphicon-remove"></span> Remove</button></a>
+                    }
                 }
             </div>
         </div>

@@ -32,9 +32,11 @@ namespace SimpleMusicStore.Web.Models.BindingModels
         public string Country { get; set; }
         
         [Required]
+        [StringLength(20, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 3)]
         [Display(Name = "City")]
         public string City { get; set; }
-        
+
+        [StringLength(50, ErrorMessage = "The {0} must be at least {2} and at max {1} characters long.", MinimumLength = 5)]
         [Required]
         [Display(Name = "Street")]
         public string Street { get; set; }

@@ -40,9 +40,9 @@ namespace SimpleMusicStore.Web.Controllers
             return View(model);
         }
 
-        public async Task<IActionResult> Details(int id)
+        public async Task<IActionResult> Details(int labelId)
         {
-            var label = await _labelService.GetLabel(id);
+            var label = await _labelService.GetLabel(labelId);
 
             if (label is null)
             {
@@ -58,30 +58,33 @@ namespace SimpleMusicStore.Web.Controllers
                 {
                     model.IsFollowed = true;
                 }
+                model.Comments.ForEach(c => c.IsCreator = c.UserId == userId);
             }
+
+            model.Records = model.Records.Where(r=>r.IsActive).OrderByDescending(r => r.DateAdded).ToList();
 
             return View(model);
         }
 
 
         [Authorize]
-        public async Task<IActionResult> FollowLabel(int labelId)
+        public async Task<IActionResult> Follow(int labelId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _labelService.FollowLabel(labelId, userId);
 
-            return Redirect("/labels/details?labeId=" + labelId);
+            return Redirect("/labels/details?labelId=" + labelId);
         }
 
 
 
         [Authorize]
-        public async Task<IActionResult> UnfollowLabel(int labelId)
+        public async Task<IActionResult> Unfollow(int labelId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _labelService.UnfollowLabel(labelId, userId);
 
-            return Redirect("/labels/details?labeId=" + labelId);
+            return Redirect("/labels/details?labelId=" + labelId);
         }
     }
 }

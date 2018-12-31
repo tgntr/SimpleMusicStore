@@ -6,6 +6,7 @@
 
   <ItemGroup>
     <Compile Remove="Migrations\20181228193026_remove-cascade-delete-add-validations-for-address.cs" />
+    <Compile Remove="Migrations\20181231095401_stop-restriction.cs" />
   </ItemGroup>
 
   <ItemGroup>

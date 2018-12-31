@@ -32,7 +32,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal void AddToCart(int recordId, ISession session)
         {
-            if (!_recordService.IsValidRecordId(recordId))
+            if (!_recordService.IsValidRecordId(recordId) )
             {
                 return;
             }
@@ -155,6 +155,11 @@ namespace SimpleMusicStore.Web.Services
         internal void EmptyCart(ISession session)
         {
             session.SetString(_cart, "");
+        }
+
+        internal List<Order> All()
+        {
+            return  _context.Orders.Include(o => o.Items).ThenInclude(i => i.Record).ToList();
         }
     }
 }

@@ -1,0 +1,17 @@
+﻿@model List<SimpleMusicStore.Web.Models.Dtos.CommentDto>
+@{
+    ViewData["Title"] = "My Comments";
+}
+<br />
+<h2>My Comments</h2>
+@foreach (var comment in Model.OrderByDescending(c => c.DatePosted))
+{
+    <hr />
+    <div class="form-group">
+        <small><span class="glyphicon glyphicon-time"></span> @comment.DateFormat</small>
+    </div>
+    <div class="form-group" style="word-wrap : break-word">@comment.Content</div>
+    <div>
+        <a asp-controller="Comments" asp-action="Remove" asp-route-commentId="@comment.Id"><button type="submit" class="btn btngroup btn-default" onclick="return confirm('Are you sure you want to remove this comment?');"><span class="glyphicon glyphicon-remove"></span> Remove</button></a>
+    </div>
+}

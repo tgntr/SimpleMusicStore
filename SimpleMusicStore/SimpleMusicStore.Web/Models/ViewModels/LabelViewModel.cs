@@ -24,5 +24,16 @@ namespace SimpleMusicStore.Web.Models.ViewModels
         public string Comment { get; set; }
 
         public bool IsFollowed { get; set; } = false;
+
+        public string ImageUrl { get; set; }
+
+        public string GetImage()
+        {
+            if (ImageUrl != "")
+            {
+                return ImageUrl;
+            }
+            return @"https://upload.wikimedia.org/wikipedia/commons/thumb/b/b6/12in-Vinyl-LP-Record-Angle.jpg/330px-12in-Vinyl-LP-Record-Angle.jpg";
+        }
     }
 }

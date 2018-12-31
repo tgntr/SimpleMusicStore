@@ -41,5 +41,6 @@ namespace SimpleMusicStore.Web.Models.ViewModels
 
         public string Format { get; set; }
 
+        public bool IsActive { get; set; }
     }
 }

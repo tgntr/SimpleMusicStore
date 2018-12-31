@@ -138,7 +138,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal bool IsValidRecordId(int recordId)
         {
-            return  _context.Records.Any(r => r.Id == recordId);
+            return  _context.Records.Any(r => r.Id == recordId && r.IsActive);
         }
 
 
@@ -192,31 +192,33 @@ namespace SimpleMusicStore.Web.Services
                 return;
             }
 
-            _context.Records.Remove(record);
+            record.IsActive = false;
             await _context.SaveChangesAsync();
         }
 
 
 
 
-        internal async Task<List<Record>> All(string orderBy, string userId = null, List<string> genres = null)
+        internal async Task<List<Record>> All(string sort, string userId = null, List<string> genres = null, List<string> formats = null)
         {
-            var records = await All();
+            var records = await All(genres, formats);
 
-            if (orderBy == "newest")
+            if (sort == "newest")
             {
                 records = records.OrderByDescending(r => r.DateAdded).ToList();
             }
-            else if (orderBy == "alphabetically")
+            else if (sort == "alphabetically")
             {
                 records = records.OrderBy(r => r.Title).ToList();
             }
-            else if (orderBy == "popularity" || (orderBy == "recommended" && userId == null))
+            else if (sort == "popularity" || (sort == "recommended" && userId == null))
             {
-                records = records.OrderByDescending(r => r.WantedBy.Count() + (r.Orders.Count() * 2)).ToList();
+                records = records.OrderByDescending(r => r.WantedBy.Count() + (r.Orders.Sum(o=>o.Quantity) * 2)).ToList();
             }
-            else if (orderBy == "recommended")
+            else if (sort == "recommended")
             {
+                var orderService = new OrderService(_context, _mapper);
+
                 records = records.OrderByDescending(record =>
                 {
                     if (record.Orders.Any(o => o.Order.UserId == userId))
@@ -234,8 +236,13 @@ namespace SimpleMusicStore.Web.Services
                     {
                         labelIsFollowed = 10;
                     }
-                    var artistOrLabelOrderCount = record.Orders.Where(o => (o.Record.ArtistId == record.ArtistId || o.Record.LabelId == record.LabelId) && o.Order.UserId == userId).Count();
-                    var artistOrLabelWantlistCount = record.WantedBy.Where(w => (w.Record.ArtistId == record.ArtistId || w.Record.LabelId == record.LabelId) && w.UserId == userId).Count();
+                    var artistOrLabelOrderCount = orderService.All()
+                    .Where(o => o.UserId == userId)
+                    .Sum(o =>
+                        o.Items
+                            .Where(i => i.Record.Artist.Name == record.Artist.Name || i.Record.Label.Name == record.Label.Name)
+                            .Sum(i => i.Quantity)
+                         );
 
 
                     return artistIsFollowed + labelIsFollowed + artistOrLabelOrderCount;
@@ -253,9 +260,10 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        private async Task<List<Record>> All(List<string> genres = null)
+        private async Task<List<Record>> All(List<string> genres, List<string> formats)
         {
             var records = await _context.Records
+                .Where(r=>r.IsActive)
                 .Include(r => r.Artist)
                     .ThenInclude(a => a.Followers)
                 .Include(r => r.Label)
@@ -268,6 +276,11 @@ namespace SimpleMusicStore.Web.Services
             if (genres != null && genres.Count > 0)
             {
                 records = records.Where(r => genres.Contains(r.Genre)).ToList();
+            }
+
+            if (formats != null && formats.Count > 0)
+            {
+                records = records.Where(r => formats.Contains(r.Format)).ToList();
             }
             return records;
         }
@@ -315,6 +328,14 @@ namespace SimpleMusicStore.Web.Services
         }
 
 
+        internal List<string> GetAllGenres()
+        {
+            return _context.Records.Select(r => r.Genre).Distinct().ToList();
+        }
 
+        internal List<string> GetAllFormats()
+        {
+            return _context.Records.Select(r => r.Format).Distinct().ToList();
+        }
     }
 }

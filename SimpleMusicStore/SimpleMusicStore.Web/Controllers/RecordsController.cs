@@ -34,32 +34,31 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public async Task<IActionResult> All()
+        //public async Task<IActionResult> All()
+        //{
+        //    var userId = "";
+        //    if (User != null)
+        //    {
+        //        userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    }
+        //    var records = (await _recordService.All(userId)).Select(_mapper.Map<RecordViewModel>).ToList();
+        //    var allRecordsViewModel = new AllRecordsViewModel { Records = records };
+        //
+        //    return View(allRecordsViewModel);
+        //}
+
+
+
+        
+        public async Task<IActionResult> All(string sort = "newest", List<string> selectedGenres = null, List<string> selectedFormats = null)
         {
             var userId = "";
             if (User != null)
             {
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            var records = (await _recordService.All(userId)).Select(_mapper.Map<RecordViewModel>).ToList();
-            var allRecordsViewModel = new AllRecordsViewModel { Records = records };
-
-            return View(allRecordsViewModel);
-        }
-
-
-
-
-        [HttpPost]
-        public async Task<IActionResult> All(AllRecordsViewModel model)
-        {
-            var userId = "";
-            if (User != null)
-            {
-                userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            }
-            var records = (await _recordService.All(model.Sort, userId, model.SelectedGenres)).Select(_mapper.Map<RecordViewModel>).ToList();
-            model.Records = records;
+            var records = (await _recordService.All(sort, userId, selectedGenres, selectedFormats)).Select(_mapper.Map<RecordViewModel>).ToList();
+            var model = new AllRecordsViewModel { Records = records, Sort = sort, AllGenres = _recordService.GetAllGenres(), SelectedGenres = selectedGenres, AllFormats = _recordService.GetAllFormats(), SelectedFormats = selectedFormats };
 
             return View(model);
         }
@@ -76,17 +75,20 @@ namespace SimpleMusicStore.Web.Controllers
                 return RedirectToAction("All");
             }
 
-            var viewModel = _mapper.Map<RecordViewModel>(record);
+            var model = _mapper.Map<RecordViewModel>(record);
 
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
                 if (record.WantedBy.Any(ru=> ru.UserId == userId))
                 {
-                    viewModel.IsFollowed = true;
+                    model.IsFollowed = true;
                 }
+
+                model.Comments.ForEach(c => c.IsCreator = c.UserId == userId);
             }
-            return View(viewModel);
+
+            return View(model);
         }
 
 

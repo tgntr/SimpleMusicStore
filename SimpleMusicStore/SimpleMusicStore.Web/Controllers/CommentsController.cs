@@ -34,7 +34,7 @@ namespace SimpleMusicStore.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Redirect($"/records/details?recordId={recordId}");
+                return Redirect(Request.Headers["Referer"].ToString());
             }
             
             await _commentService.AddComment<Record>(recordId, model.Comment, GetUserId);
@@ -52,7 +52,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect($"/artists/details?artistId={artistId}");
             }
 
-            await _commentService.AddComment<Artist>(model.Id, model.Comment, GetUserId);
+            await _commentService.AddComment<Artist>(artistId, model.Comment, GetUserId);
 
             return Redirect($"/artists/details?artistId={artistId}");
         }
@@ -62,20 +62,19 @@ namespace SimpleMusicStore.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return Redirect($"/labels/details?labeId={labelId}");
+                return Redirect($"/labels/details?labelId={labelId}");
             }
             
-            await _commentService.AddComment<Label>(model.Id, model.Comment, GetUserId);
+            await _commentService.AddComment<Label>(labelId, model.Comment, GetUserId);
 
-            return Redirect($"/labels/details?labeId={labelId}");
+            return Redirect($"/labels/details?labelId={labelId}");
         }
 
-        public async Task<IActionResult> RemoveComment(int commentId)
+        public async Task<IActionResult> Remove(int commentId)
         {
-            var isAdmin = User.IsInRole("Admin");
-            await _commentService.RemoveComment(commentId, GetUserId, isAdmin);
+            await _commentService.RemoveComment(commentId, GetUserId);
 
-            return Redirect("/");
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
         private string GetUserId => User.FindFirstValue(ClaimTypes.NameIdentifier);

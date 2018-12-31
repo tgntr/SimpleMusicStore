@@ -64,12 +64,12 @@ namespace SimpleMusicStore.Web.Services
 
         
 
-        internal async Task RemoveComment(int commentId, string userId, bool isAdmin)
+        internal async Task RemoveComment(int commentId, string userId)
         {
 
-            var comment = await _context.Comments.FirstOrDefaultAsync();
+            var comment = await _context.Comments.FirstOrDefaultAsync(c=>c.Id == commentId);
 
-            if (comment is null || (comment.UserId != userId && !isAdmin))
+            if (comment is null || comment.UserId != userId)
             {
                 return;
             }

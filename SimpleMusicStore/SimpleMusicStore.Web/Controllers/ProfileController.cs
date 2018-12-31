@@ -185,6 +185,8 @@ namespace SimpleMusicStore.Web.Controllers
 
             var comments = user.Comments.Select(_mapper.Map<CommentDto>).ToList();
 
+            
+
             return View(comments);
         }
 
@@ -197,7 +199,7 @@ namespace SimpleMusicStore.Web.Controllers
                 .Include(u => u.Addresses)
                 .SingleAsync(u => u.Id == GetUserId);
 
-            var addresses = user.Addresses.Select(_mapper.Map<AddressDto>).ToList();
+            var addresses = user.Addresses.Where(a=>a.IsActive).Select(_mapper.Map<AddressDto>).ToList();
 
             return View(addresses);
         }

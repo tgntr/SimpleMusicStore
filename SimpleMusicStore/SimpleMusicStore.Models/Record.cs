@@ -54,5 +54,7 @@ namespace SimpleMusicStore.Models
         //quantity
 
         public string Format { get; set; }
+
+        public bool IsActive { get; set; } = true;
     }
 }

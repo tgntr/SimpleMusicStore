@@ -72,7 +72,8 @@ namespace SimpleMusicStore.Web.Services
                 .Include(l=>l.Records)
                     .ThenInclude(r => r.Artist)
                 .Include(l=>l.Comments)
-                    .ThenInclude(c=>c.User.UserName)
+                    .ThenInclude(c=>c.User)
+                .Include(l=>l.Followers)
                 .FirstOrDefaultAsync(a => a.Id == labelId);
         }
 

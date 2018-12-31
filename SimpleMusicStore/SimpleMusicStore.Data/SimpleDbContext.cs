@@ -47,12 +47,10 @@ namespace SimpleMusicStore.Data
 
         protected override void OnModelCreating(ModelBuilder builder)
         {
-            base.OnModelCreating(builder);
+            
 
-            foreach (var relationship in builder.Model.GetEntityTypes().SelectMany(e => e.GetForeignKeys()))
-            {
-                relationship.DeleteBehavior = DeleteBehavior.Restrict;
-            }
+            base.OnModelCreating(builder);
+            
 
 
             builder.Entity<ArtistUser>()
@@ -113,6 +111,7 @@ namespace SimpleMusicStore.Data
                 .HasForeignKey(o => o.UserId)
                 .OnDelete(DeleteBehavior.Restrict);
             
+
 
         }
 

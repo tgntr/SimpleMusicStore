@@ -1,0 +1,106 @@
+﻿@model  SimpleMusicStore.Web.Models.ViewModels.AllRecordsViewModel
+@{
+    ViewData["Title"] = "All Records";
+}
+<br />
+<h2>All Records</h2>
+<hr />
+<br />
+<div class="row">
+    <div class="col-md-2">
+        <form method="get">
+            <div class="container">
+                <p><strong>Sort By</strong></p>
+                <div class="radio">
+                    <label><input asp-for="Sort" name="sort" type="radio" value="newest">Date added</label>
+                </div>
+                <div class="radio">
+                    <label><input asp-for="Sort" name="sort" type="radio" value="alphabetically">Alphabetically</label>
+                </div>
+                <div class="radio">
+                    <label><input asp-for="Sort" name="sort" type="radio" value="popularity">Popularity</label>
+                </div>
+                <div class="radio">
+                    <label><input asp-for="Sort" name="sort" type="radio" value="recommended">Recommended</label>
+                </div>
+            </div>
+            <hr />
+            <div class="container">
+                <p><strong>Genres</strong></p>
+                @for (int i = 0; i < Model.AllGenres.Count; i++)
+                {
+                    var genre = Model.AllGenres[i];
+                    <div class="checkbox">
+                        <label><input  name="selectedGenres" type="checkbox" value="@genre"
+                                       @if(Model.SelectedGenres.Any(g=>g == genre))
+                                     {
+                                         @:checked
+                                     }
+                                      />@genre</label>
+                    </div>
+                }
+            </div>
+            <hr />
+            <div class="container">
+                <p><strong>Formats</strong></p>
+                @for (int i = 0; i < Model.AllFormats.Count; i++)
+                {
+                    var format = Model.AllFormats[i];
+                    <div class="checkbox">
+                        <label><input name="selectedFormats" type="checkbox" value="@format"
+                                     @if(Model.SelectedFormats.Any(f=>f == format))
+                                     {
+                                         @:checked
+                                     }
+                                      >@format</label>
+                    </div>
+                }
+            </div>
+            <hr />
+            <div class="container"><button type="submit" class="btn btn-default">Sort</button></div>
+        </form>
+</div>
+    
+    
+    <div class="col-md-10">
+        <div class="row">
+            @for (int i = 0; i < Model.Records.Count; i++)
+            {
+                if (i % 5 == 0)
+                {
+
+                @:</div>
+                @:<div class="row">
+                    <br />
+                }
+
+                var record = Model.Records[i];
+
+                <div class="col-md-2">
+                    <div class="form-group">
+                        <a asp-controller="Records" asp-action="Details" asp-route-recordId="@record.Id">
+                            <img src="@record.ImageUrl" alt="@record.Artist  - @record.Title" width="100%" height="100%" />
+                        </a>
+                    </div>
+                    <div>
+                        <a asp-controller="Artists" asp-action="Details" asp-route-artistId="@record.Artist.Id">
+                            @record.Artist.Name
+                        </a> –
+                    </div>
+                    <div>
+                        <a asp-controller="Records" asp-action="Details" asp-route-recordId="@record.Id">
+                            @record.Title
+                        </a>
+                    </div>
+                    <div>
+                        <a asp-controller="Labels" asp-action="Details" asp-route-labelId="@record.Label.Id">
+                            [@record.Label.Name]
+                        </a>
+                    </div>
+                </div>
+            }
+        </div>
+
+    </div>
+</div>
+

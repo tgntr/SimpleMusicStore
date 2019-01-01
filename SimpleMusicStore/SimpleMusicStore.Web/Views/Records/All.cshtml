@@ -9,7 +9,12 @@
 <div class="row">
     <div class="col-md-2">
         <form method="get">
-            <div class="container">
+            <div class="form-group">
+                <p><strong>Search</strong></p>
+                <input asp-for="Search" name="search" class="form-control" />
+            </div>
+            <hr />
+            <div class="form-group">
                 <p><strong>Sort By</strong></p>
                 <div class="radio">
                     <label><input asp-for="Sort" name="sort" type="radio" value="newest">Date added</label>
@@ -25,7 +30,7 @@
                 </div>
             </div>
             <hr />
-            <div class="container">
+            <div class="form-group">
                 <p><strong>Genres</strong></p>
                 @for (int i = 0; i < Model.AllGenres.Count; i++)
                 {
@@ -41,7 +46,7 @@
                 }
             </div>
             <hr />
-            <div class="container">
+            <div class="form-group">
                 <p><strong>Formats</strong></p>
                 @for (int i = 0; i < Model.AllFormats.Count; i++)
                 {
@@ -57,9 +62,9 @@
                 }
             </div>
             <hr />
-            <div class="container"><button type="submit" class="btn btn-default">Sort</button></div>
+            <div class="form-group"><button type="submit" class="btn btn-default">Sort</button></div>
         </form>
-</div>
+    </div>
     
     
     <div class="col-md-10">

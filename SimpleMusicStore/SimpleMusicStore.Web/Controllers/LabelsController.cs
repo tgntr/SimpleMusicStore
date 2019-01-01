@@ -62,6 +62,7 @@ namespace SimpleMusicStore.Web.Controllers
             }
 
             model.Records = model.Records.Where(r=>r.IsActive).OrderByDescending(r => r.DateAdded).ToList();
+            model.Comments = model.Comments.OrderByDescending(c => c.DatePosted).ToList();
 
             return View(model);
         }
@@ -73,7 +74,7 @@ namespace SimpleMusicStore.Web.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _labelService.FollowLabel(labelId, userId);
 
-            return Redirect("/labels/details?labelId=" + labelId);
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
 
@@ -84,7 +85,7 @@ namespace SimpleMusicStore.Web.Controllers
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _labelService.UnfollowLabel(labelId, userId);
 
-            return Redirect("/labels/details?labelId=" + labelId);
+            return Redirect(Request.Headers["Referer"].ToString());
         }
     }
 }

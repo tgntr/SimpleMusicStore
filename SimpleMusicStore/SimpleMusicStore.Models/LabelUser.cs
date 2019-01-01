@@ -15,5 +15,7 @@ namespace SimpleMusicStore.Models
         [Required]
         public string UserId { get; set; }
         public SimpleUser User { get; set; }
+
+        public DateTime DateFollowed => DateTime.UtcNow;
     }
 }

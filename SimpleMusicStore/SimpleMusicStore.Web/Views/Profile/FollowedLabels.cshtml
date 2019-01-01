@@ -1,0 +1,35 @@
+﻿@model List<SimpleMusicStore.Web.Models.Dtos.LabelDto>
+@{
+    ViewData["Title"] = "Followed Labels";
+}
+<br />
+<h2>Followed Labels</h2>
+<br />
+<div class="row">
+    <div class="col-md-6">
+        <table class="table">
+            <thead>
+                <tr>
+                    <col width="500" />
+                    <col width="40" />
+                    <th scope="col">Label</th>
+                    <th scope="col"></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var label in Model)
+        {
+                <tr>
+                    <td>
+                        <h4><a asp-controller="Labels" asp-action="Details" asp-route-labelId="@label.Id">@label.Name</a></h4>
+                    </td>
+                    <td>
+                        <a asp-controller="Labels" asp-action="Unfollow" asp-route-labelId="@label.Id"><button type="submit" class="btn btn-default">Unfollow</button> </a>
+                    </td>
+                </tr>
+        }
+            </tbody>
+        </table>
+    </div>
+</div>

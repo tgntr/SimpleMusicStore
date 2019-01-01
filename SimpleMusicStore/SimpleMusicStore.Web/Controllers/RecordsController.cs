@@ -33,32 +33,24 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-
-        //public async Task<IActionResult> All()
-        //{
-        //    var userId = "";
-        //    if (User != null)
-        //    {
-        //        userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-        //    }
-        //    var records = (await _recordService.All(userId)).Select(_mapper.Map<RecordViewModel>).ToList();
-        //    var allRecordsViewModel = new AllRecordsViewModel { Records = records };
-        //
-        //    return View(allRecordsViewModel);
-        //}
-
-
-
-        
-        public async Task<IActionResult> All(string sort = "newest", List<string> selectedGenres = null, List<string> selectedFormats = null)
+        public async Task<IActionResult> All(string sort = "newest", List<string> selectedGenres = null, List<string> selectedFormats = null, string search = "")
         {
             var userId = "";
             if (User != null)
             {
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            var records = (await _recordService.All(sort, userId, selectedGenres, selectedFormats)).Select(_mapper.Map<RecordViewModel>).ToList();
-            var model = new AllRecordsViewModel { Records = records, Sort = sort, AllGenres = _recordService.GetAllGenres(), SelectedGenres = selectedGenres, AllFormats = _recordService.GetAllFormats(), SelectedFormats = selectedFormats };
+            var records = (await _recordService.All(sort, userId, selectedGenres, selectedFormats, search)).Select(_mapper.Map<RecordViewModel>).ToList();
+            var model = new AllRecordsViewModel
+            {
+                Records = records,
+                Sort = sort,
+                AllGenres = _recordService.GetAllGenres(),
+                SelectedGenres = selectedGenres,
+                AllFormats = _recordService.GetAllFormats(),
+                SelectedFormats = selectedFormats,
+                Search = search
+            };
 
             return View(model);
         }
@@ -88,6 +80,8 @@ namespace SimpleMusicStore.Web.Controllers
                 model.Comments.ForEach(c => c.IsCreator = c.UserId == userId);
             }
 
+            model.Comments = model.Comments.OrderByDescending(c => c.DatePosted).ToList();
+
             return View(model);
         }
 
@@ -98,7 +92,7 @@ namespace SimpleMusicStore.Web.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _recordService.AddToWantlist(recordId, userId);;
-            return Redirect("/records/details?recordId=" + recordId);
+            return Redirect(Request.Headers["Referer"].ToString());
         }
 
 
@@ -108,7 +102,7 @@ namespace SimpleMusicStore.Web.Controllers
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             await _recordService.RemoveFromWantlist(recordId, userId);
-            return Redirect("/records/details?recordId=" + recordId);
+            return Redirect(Request.Headers["Referer"].ToString());
         }
     }
 }

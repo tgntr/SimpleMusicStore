@@ -199,9 +199,9 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal async Task<List<Record>> All(string sort, string userId = null, List<string> genres = null, List<string> formats = null)
+        internal async Task<List<Record>> All(string sort, string userId = null, List<string> genres = null, List<string> formats = null, string search = null)
         {
-            var records = await All(genres, formats);
+            var records = await All(genres, formats, search);
 
             if (sort == "newest")
             {
@@ -236,13 +236,19 @@ namespace SimpleMusicStore.Web.Services
                     {
                         labelIsFollowed = 10;
                     }
+
                     var artistOrLabelOrderCount = orderService.All()
                     .Where(o => o.UserId == userId)
                     .Sum(o =>
-                        o.Items
-                            .Where(i => i.Record.Artist.Name == record.Artist.Name || i.Record.Label.Name == record.Label.Name)
-                            .Sum(i => i.Quantity)
-                         );
+                    {
+                        if (o.Items.Count == 0)
+                        {
+                            return 0;
+                        }
+                        return o.Items
+                            .Where(i => i.Record.ArtistId == record.ArtistId || i.Record.LabelId == record.LabelId)
+                            .Sum(i => i.Quantity);
+                    });
 
 
                     return artistIsFollowed + labelIsFollowed + artistOrLabelOrderCount;
@@ -260,7 +266,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        private async Task<List<Record>> All(List<string> genres, List<string> formats)
+        private async Task<List<Record>> All(List<string> genres, List<string> formats, string search)
         {
             var records = await _context.Records
                 .Where(r=>r.IsActive)
@@ -281,6 +287,12 @@ namespace SimpleMusicStore.Web.Services
             if (formats != null && formats.Count > 0)
             {
                 records = records.Where(r => formats.Contains(r.Format)).ToList();
+            }
+
+            if (search != null)
+            {
+                search = search.ToLower();
+                records = records.Where(r => r.Title.ToLower().Contains(search) || r.Artist.Name.ToLower().Contains(search) || r.Label.Name.ToLower().Contains(search)).ToList();
             }
             return records;
         }
@@ -330,12 +342,12 @@ namespace SimpleMusicStore.Web.Services
 
         internal List<string> GetAllGenres()
         {
-            return _context.Records.Select(r => r.Genre).Distinct().ToList();
+            return _context.Records.Select(r => r.Genre).Where(g=>g != null).Distinct().ToList();
         }
 
         internal List<string> GetAllFormats()
         {
-            return _context.Records.Select(r => r.Format).Distinct().ToList();
+            return _context.Records.Select(r => r.Format).Where(f=>f != null).Distinct().ToList();
         }
     }
 }

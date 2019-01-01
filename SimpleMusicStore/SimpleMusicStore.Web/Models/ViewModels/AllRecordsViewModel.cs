@@ -18,5 +18,7 @@ namespace SimpleMusicStore.Web.Models.ViewModels
         public List<string> AllFormats { get; set; }
 
         public string Sort { get; set; }
+
+        public string Search { get; set; }
     }
 }

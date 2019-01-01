@@ -82,7 +82,6 @@ namespace SimpleMusicStore
             CreateMap<RecordOrder, CartRecordViewModel>()
                 .ForMember(cr => cr.Artist, map => map.MapFrom(ro => ro.Record.Artist))
                 .ForMember(cr => cr.Label, map => map.MapFrom(ro => ro.Record.Label))
-                .ForMember(cr => cr.Artist, map => map.MapFrom(ro => ro.Record.Artist))
                 .ForMember(cr => cr.Price, map => map.MapFrom(ro => ro.Record.Price))
                 .ForMember(cr => cr.Title, map => map.MapFrom(ro => ro.Record.Title));
 
@@ -91,6 +90,20 @@ namespace SimpleMusicStore
             CreateMap<Order, CartOrderViewModel>();
 
             CreateMap<Record, CartRecordViewModel>();
+
+            CreateMap<RecordUser, RecordDto>()
+                .ForMember(dto=>dto.Id, map=>map.MapFrom(ru=>ru.RecordId))
+                .ForMember(dto => dto.Artist, map => map.MapFrom(ru => ru.Record.Artist))
+                .ForMember(dto => dto.Label, map => map.MapFrom(ru => ru.Record.Label))
+                .ForMember(dto => dto.Title, map => map.MapFrom(ru => ru.Record.Title));
+
+            CreateMap<ArtistUser, ArtistDto>()
+                .ForMember(dto => dto.Id, map => map.MapFrom(au => au.ArtistId))
+                .ForMember(dto => dto.Name, map => map.MapFrom(au => au.Artist.Name));
+
+            CreateMap<LabelUser, LabelDto>()
+                .ForMember(dto => dto.Id, map => map.MapFrom(lu => lu.LabelId))
+                .ForMember(dto => dto.Name, map => map.MapFrom(lu => lu.Label.Name));
         }
     }
 }

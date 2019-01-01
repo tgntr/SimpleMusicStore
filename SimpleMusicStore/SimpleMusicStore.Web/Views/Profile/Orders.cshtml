@@ -2,7 +2,7 @@
 @{
     ViewData["Title"] = "My Orders";
 }
-
+<br />
 <h2>My Orders</h2>
 <br />
 <table class="table">
@@ -20,7 +20,7 @@
         </tr>
     </thead>
     <tbody>
-        @foreach (var order in Model.OrderByDescending(o=>o.OrderDate))
+        @foreach (var order in Model)
         {
             <tr>
                 <td>

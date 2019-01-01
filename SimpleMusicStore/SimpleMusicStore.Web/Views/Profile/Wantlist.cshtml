@@ -1,0 +1,35 @@
+﻿@model List<SimpleMusicStore.Web.Models.Dtos.RecordDto>
+@{
+    ViewData["Title"] = "My Wantlist";
+}
+<br />
+<h2>My Wantlist</h2>
+<br />
+<div class="row">
+    <div class="col-md-8">
+        <table class="table">
+            <thead>
+                <tr>
+                    <col width="500" />
+                    <col width="40" />
+                    <th scope="col">Record</th>
+                    <th scope="col"></th>
+
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var record in Model)
+                {
+                    <tr>
+                        <td>
+                            <h4><a asp-controller="Artists" asp-action="Details" asp-route-artistId="@record.Artist.Id">@record.Artist.Name</a> - <a asp-controller="Records" asp-action="Details" asp-route-recordId="@record.Id">@record.Title</a> [<a asp-controller="Labels" asp-action="Details" asp-route-labelId="@record.Label.Id">@record.Label.Name</a>]</h4>
+                        </td>
+                        <td>
+                            <a asp-controller="Records" asp-action="RemoveFromWantlist" asp-route-recordId="@record.Id"><button type="submit" class="btn btn-default">Remove</button> </a>
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+</div>

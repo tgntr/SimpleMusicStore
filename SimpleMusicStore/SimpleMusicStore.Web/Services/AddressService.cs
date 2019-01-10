@@ -19,7 +19,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal async Task AddAddress(Address address)
+        internal async Task AddAsync(Address address)
         {
             await _context.Addresses.AddAsync(address);
             await _context.SaveChangesAsync();
@@ -27,9 +27,9 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal async Task EditAddress(AddressDto address, int addressId)
+        internal async Task EditAsync(AddressDto address, int addressId)
         {
-            var addressToEdit = await GetAddress(addressId);
+            var addressToEdit = await GetAsync(addressId);
 
             if (address == null)
             {
@@ -44,9 +44,9 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal async Task RemoveAddress (int addressId)
+        internal async Task RemoveAsync (int addressId)
         {
-            var address =  await GetAddress(addressId);
+            var address =  await GetAsync(addressId);
 
             if (address == null)
             {
@@ -57,13 +57,13 @@ namespace SimpleMusicStore.Web.Services
             await _context.SaveChangesAsync();
         }
 
-        internal async Task<Address> GetAddress(int addressId)
+        internal async Task<Address> GetAsync(int addressId)
         {
             var address = await _context.Addresses.FirstOrDefaultAsync(a => a.Id == addressId);
             return address;
         }
 
-        internal async Task<List<Address>> AllUserAddresses(string userId)
+        internal async Task<List<Address>> AllByUserAsync(string userId)
         {
             return await _context.Addresses.Where(a => a.UserId == userId && a.IsActive).ToListAsync();
         }

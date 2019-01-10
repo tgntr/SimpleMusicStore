@@ -51,7 +51,7 @@ namespace SimpleMusicStore.Web.Controllers
 
             address.UserId = userId;
 
-            await _addressService.AddAddress(address);
+            await _addressService.AddAsync(address);
 
             return Redirect("/profile/addresses");
         }
@@ -61,7 +61,7 @@ namespace SimpleMusicStore.Web.Controllers
 
         public async Task<IActionResult> Edit(int addressId)
         {
-            var address = await _addressService.GetAddress(addressId);
+            var address = await _addressService.GetAsync(addressId);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -86,7 +86,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return View(model);
             }
 
-            await _addressService.EditAddress(model, addressId);
+            await _addressService.EditAsync(model, addressId);
 
             return Redirect("/profile/addresses");
         }
@@ -95,7 +95,7 @@ namespace SimpleMusicStore.Web.Controllers
 
         public async Task<IActionResult> Remove(int addressId)
         {
-            var address = await _addressService.GetAddress(addressId);
+            var address = await _addressService.GetAsync(addressId);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -104,7 +104,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect("/profile/addresses");
             }
 
-            await _addressService.RemoveAddress(addressId);
+            await _addressService.RemoveAsync(addressId);
 
             return Redirect("/profile/addresses");
         }

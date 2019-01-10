@@ -23,8 +23,6 @@ namespace SimpleMusicStore.Web.Controllers
         public CommentsController(SimpleDbContext context)
         {
             _commentService = new CommentService(context);
-            
-            
         }
         
 
@@ -37,7 +35,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect(Request.Headers["Referer"].ToString());
             }
             
-            await _commentService.AddComment<Record>(recordId, model.Comment, GetUserId);
+            await _commentService.AddAsync<Record>(recordId, model.Comment, GetUserId);
 
             return Redirect($"/records/details?recordId={recordId}");
         }
@@ -52,7 +50,7 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect($"/artists/details?artistId={artistId}");
             }
 
-            await _commentService.AddComment<Artist>(artistId, model.Comment, GetUserId);
+            await _commentService.AddAsync<Artist>(artistId, model.Comment, GetUserId);
 
             return Redirect($"/artists/details?artistId={artistId}");
         }
@@ -65,14 +63,14 @@ namespace SimpleMusicStore.Web.Controllers
                 return Redirect($"/labels/details?labelId={labelId}");
             }
             
-            await _commentService.AddComment<Label>(labelId, model.Comment, GetUserId);
+            await _commentService.AddAsync<Label>(labelId, model.Comment, GetUserId);
 
             return Redirect($"/labels/details?labelId={labelId}");
         }
 
         public async Task<IActionResult> Remove(int commentId)
         {
-            await _commentService.RemoveComment(commentId, GetUserId);
+            await _commentService.RemoveAsync(commentId, GetUserId);
 
             return Redirect(Request.Headers["Referer"].ToString());
         }

@@ -23,12 +23,12 @@ namespace SimpleMusicStore.Web.Services
             _labelService = new LabelService(context);
         }
 
-        internal async Task AddComment<T>(int targetId, string content, string userId)
+        internal async Task AddAsync<T>(int targetId, string content, string userId)
         {
             Comment comment = new Comment { UserId = userId, Content = content };
             if (typeof(T) == typeof(Record))
             {
-                if (!await _recordService.IsValidRecordIdAsync(targetId))
+                if (!await _recordService.IsValidIdAsync(targetId))
                 {
                     return;
                 }
@@ -37,7 +37,7 @@ namespace SimpleMusicStore.Web.Services
             }
             else if (typeof(T) == typeof(Artist))
             {
-                if (!await _artistService.IsValidArtistId(targetId))
+                if (!await _artistService.IsValidIdAsync(targetId))
                 { 
                     return;
                 }
@@ -46,7 +46,7 @@ namespace SimpleMusicStore.Web.Services
             }
             else if (typeof(T) == typeof(Label))
             {
-                if (!await _labelService.IsValidLabelId(targetId))
+                if (!await _labelService.IsValidIdAsync(targetId))
                 {
                     return;
                 }
@@ -64,7 +64,7 @@ namespace SimpleMusicStore.Web.Services
 
         
 
-        internal async Task RemoveComment(int commentId, string userId)
+        internal async Task RemoveAsync(int commentId, string userId)
         {
 
             var comment = await _context.Comments.FirstOrDefaultAsync(c=>c.Id == commentId);
@@ -80,6 +80,6 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        private async Task<Comment> GetComment(int commentId) => await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId);
+        private async Task<Comment> GetAsync(int commentId) => await _context.Comments.FirstOrDefaultAsync(c => c.Id == commentId);
     }
 }

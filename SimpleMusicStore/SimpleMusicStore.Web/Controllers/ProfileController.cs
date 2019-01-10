@@ -143,9 +143,9 @@ namespace SimpleMusicStore.Web.Controllers
                         .ThenInclude(r => r.Label)
                 .SingleAsync(u => u.Id == GetUserId);
 
-            var wantlist = user.Wantlist.OrderByDescending(w=>w.DateFollowed).Select(_mapper.Map<RecordDto>).ToList();
+            var model = user.Wantlist.OrderByDescending(w=>w.DateFollowed).Select(_mapper.Map<RecordDto>).ToList();
 
-            return View(wantlist);
+            return View(model);
         }
 
 
@@ -158,9 +158,9 @@ namespace SimpleMusicStore.Web.Controllers
                    .ThenInclude(al => al.Artist)
                 .SingleAsync(u => u.Id == GetUserId);
 
-            var followedArtists = user.FollowedArtists.OrderByDescending(fa => fa.DateFollowed).Select(_mapper.Map<ArtistDto>).ToList();
+            var model = user.FollowedArtists.OrderByDescending(fa => fa.DateFollowed).Select(_mapper.Map<ArtistDto>).ToList();
 
-            return View(followedArtists);
+            return View(model);
         }
 
 
@@ -173,9 +173,9 @@ namespace SimpleMusicStore.Web.Controllers
                     .ThenInclude(fl=>fl.Label)
                 .SingleAsync(u => u.Id == GetUserId);
 
-            var followedLabels = user.FollowedLabels.OrderByDescending(w => w.DateFollowed).Select(_mapper.Map<LabelDto>).ToList();
+            var model = user.FollowedLabels.OrderByDescending(w => w.DateFollowed).Select(_mapper.Map<LabelDto>).ToList();
 
-            return View(followedLabels);
+            return View(model);
         }
 
 
@@ -187,11 +187,11 @@ namespace SimpleMusicStore.Web.Controllers
                 .Include(u => u.Comments)
                 .SingleAsync(u => u.Id == GetUserId);
 
-            var comments = user.Comments.OrderByDescending(c=>c.DatePosted).Select(_mapper.Map<CommentDto>).ToList();
+            var model = user.Comments.OrderByDescending(c=>c.DatePosted).Select(_mapper.Map<CommentDto>).ToList();
 
             
 
-            return View(comments);
+            return View(model);
         }
 
 
@@ -203,9 +203,9 @@ namespace SimpleMusicStore.Web.Controllers
                 .Include(u => u.Addresses)
                 .SingleAsync(u => u.Id == GetUserId);
 
-            var addresses = user.Addresses.OrderByDescending(a=>a.Id).Where(a=>a.IsActive).Select(_mapper.Map<AddressDto>).ToList();
+            var model = user.Addresses.OrderByDescending(a=>a.Id).Where(a=>a.IsActive).Select(_mapper.Map<AddressDto>).ToList();
 
-            return View(addresses);
+            return View(model);
         }
 
 
@@ -216,9 +216,9 @@ namespace SimpleMusicStore.Web.Controllers
                 .Include(u => u.Orders)
                 .SingleAsync(u => u.Id == GetUserId);
 
-            var addresses = user.Orders.OrderByDescending(o=>o.OrderDate).Select(_mapper.Map<OrderViewModel>).ToList();
+            var model = user.Orders.OrderByDescending(o=>o.OrderDate).Select(_mapper.Map<OrderViewModel>).ToList();
 
-            return View(addresses);
+            return View(model);
 
 
         }

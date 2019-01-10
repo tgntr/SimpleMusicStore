@@ -32,7 +32,7 @@ namespace SimpleMusicStore.Web.Services
 
         internal void AddToCart(int recordId, ISession session)
         {
-            if (!_recordService.IsValidRecordId(recordId) )
+            if (!_recordService.IsValidId(recordId) )
             {
                 return;
             }
@@ -107,7 +107,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal async Task<int> Order(CartOrderViewModel model, string userId, ISession session, decimal totalPrice)
+        internal async Task<int> OrderAsync(CartOrderViewModel model, string userId, ISession session, decimal totalPrice)
         {
             var cart = GetCart(session);
 
@@ -139,7 +139,7 @@ namespace SimpleMusicStore.Web.Services
             return value == null ? null : JsonConvert.DeserializeObject<List<CartItemDto>>(value);
         }
 
-        internal async Task<Order> GetOrder(int orderId)
+        internal async Task<Order> GetAsync(int orderId)
         {
             return await _context.Orders
                 .Include(o => o.Items)

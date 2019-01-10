@@ -17,7 +17,7 @@ namespace SimpleMusicStore.Web.Services
         {
         }
 
-        private async Task<List<Artist>> All()
+        private async Task<List<Artist>> AllAsync()
         {
             var artists = await _context.Artists
                 .Include(a => a.Records)
@@ -28,9 +28,9 @@ namespace SimpleMusicStore.Web.Services
             return artists;
         }
 
-        internal async Task<List<Artist>> All(string orderBy, string userId = null)
+        internal async Task<List<Artist>> AllAsync(string orderBy, string userId = null)
         {
-            var artists = await All();
+            var artists = await AllAsync();
             if (orderBy == "alphabetically")
             {
                 artists = artists.OrderBy(a => a.Name).ToList();
@@ -61,7 +61,7 @@ namespace SimpleMusicStore.Web.Services
             return artists;
         }
 
-        internal async Task<Artist> GetArtist(int artistId)
+        internal async Task<Artist> GetAsync(int artistId)
         {
             return await _context.Artists
                 .Include(a => a.Records)
@@ -72,16 +72,16 @@ namespace SimpleMusicStore.Web.Services
                 .FirstOrDefaultAsync(a => a.Id == artistId);
         }
 
-        internal async Task<bool> IsValidArtistId(int artistId)
+        internal async Task<bool> IsValidIdAsync(int artistId)
         {
             return await _context.Artists.AnyAsync(l => l.Id == artistId);
         }
 
 
 
-        internal async Task FollowArtist(int artistId, string userId)
+        internal async Task FollowAsync(int artistId, string userId)
         {
-            if (!await IsValidArtistId(artistId))
+            if (!await IsValidIdAsync(artistId))
             {
                 return;
             }
@@ -97,9 +97,9 @@ namespace SimpleMusicStore.Web.Services
             await _context.SaveChangesAsync();
         }
 
-        internal async Task UnfollowArtist(int artistId, string userId)
+        internal async Task UnfollowAsync(int artistId, string userId)
         {
-            if (!await IsValidArtistId(artistId))
+            if (!await IsValidIdAsync(artistId))
             {
                 return;
             }

@@ -40,7 +40,7 @@ namespace SimpleMusicStore.Web.Controllers
             {
                 userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
             }
-            var records = (await _recordService.All(sort, userId, selectedGenres, selectedFormats, search)).Select(_mapper.Map<RecordViewModel>).ToList();
+            var records = (await _recordService.AllAsync(sort, userId, selectedGenres, selectedFormats, search)).Select(_mapper.Map<RecordViewModel>).ToList();
             var model = new AllRecordsViewModel
             {
                 Records = records,
@@ -60,7 +60,7 @@ namespace SimpleMusicStore.Web.Controllers
 
         public async Task<IActionResult> Details(int recordId)
         {
-            var record = await _recordService.GetRecordAsync(recordId);
+            var record = await _recordService.GetAsync(recordId);
 
             if (record is null)
             {
@@ -83,6 +83,8 @@ namespace SimpleMusicStore.Web.Controllers
             model.Comments = model.Comments.OrderByDescending(c => c.DatePosted).ToList();
 
             return View(model);
+
+
         }
 
 
@@ -91,7 +93,7 @@ namespace SimpleMusicStore.Web.Controllers
         public async Task<IActionResult> AddToWantlist(int recordId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _recordService.AddToWantlist(recordId, userId);;
+            await _recordService.AddToWantlistAsync(recordId, userId);;
             return Redirect(Request.Headers["Referer"].ToString());
         }
 
@@ -101,7 +103,7 @@ namespace SimpleMusicStore.Web.Controllers
         public async Task<IActionResult> RemoveFromWantList(int recordId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _recordService.RemoveFromWantlist(recordId, userId);
+            await _recordService.RemoveFromWantlistAsync(recordId, userId);
             return Redirect(Request.Headers["Referer"].ToString());
         }
     }

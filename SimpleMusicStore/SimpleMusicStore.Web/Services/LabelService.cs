@@ -19,9 +19,9 @@ namespace SimpleMusicStore.Web.Services
        
 
 
-        internal async Task<List<Label>> All(string orderBy, string userId = null)
+        internal async Task<List<Label>> AllAsync(string orderBy, string userId = null)
         {
-            var labels = await All();
+            var labels = await AllAsync();
             if (orderBy == "alphabetically")
             {
                 labels = labels.OrderBy(a => a.Name).ToList();
@@ -54,7 +54,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        private async Task<List<Label>> All()
+        private async Task<List<Label>> AllAsync()
         {
             return await _context.Labels
                 .Include(l => l.Followers)
@@ -66,7 +66,7 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal async Task<Label> GetLabel(int labelId)
+        internal async Task<Label> GetAsync(int labelId)
         {
             return await _context.Labels
                 .Include(l=>l.Records)
@@ -79,16 +79,16 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal async Task<bool> IsValidLabelId(int labelId)
+        internal async Task<bool> IsValidIdAsync(int labelId)
         {
             return await _context.Labels.AnyAsync(l => l.Id == labelId);
         }
 
 
 
-        internal async Task FollowLabel(int labelId, string userId)
+        internal async Task FollowAsync(int labelId, string userId)
         {
-            if (!await IsValidLabelId(labelId))
+            if (!await IsValidIdAsync(labelId))
             {
                 return;
             }
@@ -105,9 +105,9 @@ namespace SimpleMusicStore.Web.Services
 
 
 
-        internal async Task UnfollowLabel(int labelId, string userId)
+        internal async Task UnfollowAsync(int labelId, string userId)
         {
-            if (!await IsValidLabelId(labelId))
+            if (!await IsValidIdAsync(labelId))
             {
                 return;
             }

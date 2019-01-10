@@ -27,25 +27,25 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public async Task<IActionResult> All(string orderBy = "")
-        {
-            var userId = "";
-            if (User != null)
-            {
-                userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            }
-            List<ArtistViewModel> model = (await _artistService.All(orderBy, userId)).Select(_mapper.Map<ArtistViewModel>).ToList();
-
-            return View(model);
-        }
+        //public async Task<IActionResult> All(string sort = "")
+        //{
+        //    var userId = "";
+        //    if (User != null)
+        //    {
+        //        userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    }
+        //    var model = (await _artistService.AllAsync(sort, userId)).Select(_mapper.Map<ArtistViewModel>).ToList();
+        //
+        //    return View(model);
+        //}
 
         public async Task<IActionResult> Details(int artistId)
         {
-            var artist = await _artistService.GetArtist(artistId);
+            var artist = await _artistService.GetAsync(artistId);
 
             if (artist is null)
             {
-                return RedirectToAction("All");
+                return Redirect("/");
             }
 
             var model = _mapper.Map<ArtistViewModel>(artist);
@@ -72,7 +72,7 @@ namespace SimpleMusicStore.Web.Controllers
         public async Task<IActionResult> Follow(int artistId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _artistService.FollowArtist(artistId, userId);
+            await _artistService.FollowAsync(artistId, userId);
 
             return Redirect(Request.Headers["Referer"].ToString());
         }
@@ -82,7 +82,7 @@ namespace SimpleMusicStore.Web.Controllers
         public async Task<IActionResult> Unfollow(int artistId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _artistService.UnfollowArtist(artistId, userId);
+            await _artistService.UnfollowAsync(artistId, userId);
         
             return Redirect(Request.Headers["Referer"].ToString());
         }

@@ -36,7 +36,7 @@ namespace SimpleMusicStore.Web.Controllers
 
         public async Task<IActionResult> Details(int orderId)
         {
-            var order = await _orderService.GetOrder(orderId);
+            var order = await _orderService.GetAsync(orderId);
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
 
@@ -75,7 +75,7 @@ namespace SimpleMusicStore.Web.Controllers
             }
 
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            model.Addresses = (await _addressService.AllUserAddresses(userId)).Select(_mapper.Map<AddressDto>).ToList();
+            model.Addresses = (await _addressService.AllByUserAsync(userId)).Select(_mapper.Map<AddressDto>).ToList();
 
             return View(model);
         }
@@ -106,7 +106,7 @@ namespace SimpleMusicStore.Web.Controllers
 
             
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            var orderId = await _orderService.Order(model, userId, HttpContext.Session, cart.TotalPrice());
+            var orderId = await _orderService.OrderAsync(model, userId, HttpContext.Session, cart.TotalPrice());
 
             return Redirect($"/orders/details?orderId={orderId}");
         }
@@ -139,26 +139,26 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public IActionResult EmptyCart(int recordId)
-        {
-            _orderService.EmptyCart(HttpContext.Session);
-
-            return RedirectToAction("Cart");
-        }
+        //public IActionResult EmptyCart(int recordId)
+        //{
+        //    _orderService.EmptyCart(HttpContext.Session);
+        //
+        //    return RedirectToAction("Cart");
+        //}
 
 
 
 
         private CartOrderViewModel GetCart()
         {
-            List<CartRecordViewModel> items = new List<CartRecordViewModel>();
-            List<CartItemDto> cart = _orderService.GetCart(HttpContext.Session);
+            var items = new List<CartRecordViewModel>();
+            var cart = _orderService.GetCart(HttpContext.Session);
             if (cart != null)
             {
                 items = _orderService.GetCart(HttpContext.Session)
                     .Select(c =>
                     {
-                        var record = _recordService.GetRecord(c.RecordId);
+                        var record = _recordService.Get(c.RecordId);
                         var cartRecordViewModel = _mapper.Map<CartRecordViewModel>(record);
                         cartRecordViewModel.Quantity = c.Quantity;
                         return cartRecordViewModel;

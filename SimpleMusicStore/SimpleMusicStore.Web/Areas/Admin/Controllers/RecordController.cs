@@ -45,9 +45,16 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
 
             var currentDiscogsId = await DiscogsUtilities.GetDiscogsIdAsync(model.DiscogsUrl);
 
-            var recordId = await _recordService.FindByDiscogsId(currentDiscogsId);
+            var recordId = await _recordService.FindByDiscogsIdAsync(currentDiscogsId);
             if (recordId >= 0)
             {
+                var record = await _recordService.GetAsync(recordId);
+
+                if (!record.IsActive)
+                {
+                    await _recordService.AddExistingAsync(recordId);
+                }
+
                 return Redirect($"/records/details?recordId={recordId}");
             }
 
@@ -92,9 +99,9 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
             }
             
             var recordDto = await DiscogsUtilities.GetAsync<DiscogsRecordDto>(discogsId);
-            await _recordService.AddRecord(recordDto, model.Price);
+            await _recordService.AddAsync(recordDto, model.Price);
 
-            var recordId = await _recordService.FindByDiscogsId(discogsId);
+            var recordId = await _recordService.FindByDiscogsIdAsync(discogsId);
             return Redirect($"/records/details?recordId={recordId}");
         }
 
@@ -102,12 +109,12 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Edit(int recordId)
         {
-            if (!await _recordService.IsValidRecordIdAsync(recordId))
+            if (!await _recordService.IsValidIdAsync(recordId))
             {
                 return Redirect("/records/all");
             }
 
-            var record = await _recordService.GetRecordAsync(recordId);
+            var record = await _recordService.GetAsync(recordId);
             var model = _mapper.Map<RecordAdminViewModel>(record);
 
             return View(model);
@@ -118,20 +125,20 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
         [HttpPost]
         public async Task<IActionResult> Edit(int recordId, RecordAdminViewModel model)
         {
-            if (!await _recordService.IsValidRecordIdAsync(recordId))
+            if (!await _recordService.IsValidIdAsync(recordId))
             {
                 return Redirect("/records/all");
             }
 
             if (!ModelState.IsValid)
             {
-                var record = await _recordService.GetRecordAsync(recordId);
+                var record = await _recordService.GetAsync(recordId);
                 model = _mapper.Map<RecordAdminViewModel>(record);
 
                 return View(model);
             }
 
-            await _recordService.EditRecordPrice(recordId, model.Price);
+            await _recordService.EditAsync(recordId, model.Price);
             
             return Redirect($"/records/details?recordId={recordId}");
         }
@@ -140,14 +147,15 @@ namespace SimpleMusicStore.Web.Areas.Admin.Controllers
 
         public async Task<IActionResult> Remove(int recordId)
         {
-            if (!await _recordService.IsValidRecordIdAsync(recordId))
+            if (!await _recordService.IsValidIdAsync(recordId))
             {
                 return Redirect("/records/all");
             }
 
-            await _recordService.RemoveRecord(recordId);
+            await _recordService.RemoveAsync(recordId);
 
             return Redirect("/");
+            
         }
     }
 }

@@ -27,26 +27,26 @@ namespace SimpleMusicStore.Web.Controllers
 
 
 
-        public async Task<IActionResult> All(string orderBy = "")
-        {
-            var userId = "";
-            if (User != null)
-            {
-                userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            }
-
-            var model = (await _labelService.All(orderBy, userId)).Select(_mapper.Map<LabelViewModel>).ToList();
-
-            return View(model);
-        }
+        //public async Task<IActionResult> All(string orderBy = "")
+        //{
+        //    var userId = "";
+        //    if (User != null)
+        //    {
+        //        userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+        //    }
+        //
+        //    var model = (await _labelService.AllAsync(orderBy, userId)).Select(_mapper.Map<LabelViewModel>).ToList();
+        //
+        //    return View(model);
+        //}
 
         public async Task<IActionResult> Details(int labelId)
         {
-            var label = await _labelService.GetLabel(labelId);
+            var label = await _labelService.GetAsync(labelId);
 
             if (label is null)
             {
-                return RedirectToAction("All");
+                return Redirect("/");
             }
 
             var model = _mapper.Map<LabelViewModel>(label);
@@ -72,7 +72,7 @@ namespace SimpleMusicStore.Web.Controllers
         public async Task<IActionResult> Follow(int labelId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _labelService.FollowLabel(labelId, userId);
+            await _labelService.FollowAsync(labelId, userId);
 
             return Redirect(Request.Headers["Referer"].ToString());
         }
@@ -83,7 +83,7 @@ namespace SimpleMusicStore.Web.Controllers
         public async Task<IActionResult> Unfollow(int labelId)
         {
             var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-            await _labelService.UnfollowLabel(labelId, userId);
+            await _labelService.UnfollowAsync(labelId, userId);
 
             return Redirect(Request.Headers["Referer"].ToString());
         }

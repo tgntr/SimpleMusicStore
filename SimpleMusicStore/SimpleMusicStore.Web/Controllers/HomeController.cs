@@ -38,19 +38,19 @@ namespace SimpleMusicStore.Web.Controllers
         }
         public async Task<IActionResult> Index()
         {
-            var homeViewModel = new HomeViewModel();
+            var model = new HomeViewModel();
             if (User.Identity.IsAuthenticated)
             {
                 var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
-                homeViewModel.RecommendedRecords = (await _recordService.All("recommended", userId)).Select(_mapper.Map < RecordViewModel>).Take(10).ToList();
+                model.RecommendedRecords = (await _recordService.AllAsync("recommended", userId)).Select(_mapper.Map < RecordViewModel>).Take(10).ToList();
             }
 
-            homeViewModel.MostPopularRecords = (await _recordService.All("popularity")).Select(_mapper.Map<RecordViewModel>).Take(10).ToList();
-            homeViewModel.NewArrivals = (await _recordService.All("newest")).Select(_mapper.Map<RecordViewModel>).Take(10).ToList();
+            model.MostPopularRecords = (await _recordService.AllAsync("popularity")).Select(_mapper.Map<RecordViewModel>).Take(10).ToList();
+            model.NewArrivals = (await _recordService.AllAsync("newest")).Select(_mapper.Map<RecordViewModel>).Take(10).ToList();
            // homeViewModel.MostPopularArtists = (await _artistService.All("popularity")).Select(_mapper.Map<ArtistViewModel>).Take(5).ToList();
            // homeViewModel.MostPopularLabels = (await _labelService.All("popularity")).Select(_mapper.Map<LabelViewModel>).Take(5).ToList();
 
-            return View(homeViewModel);
+            return View(model);
         }
 
         [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
